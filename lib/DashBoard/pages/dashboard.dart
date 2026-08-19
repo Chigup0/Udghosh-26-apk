@@ -88,7 +88,7 @@ class _DashBoardState extends State<DashBoard> {
     super.initState();
   }
 
-  Widget customStyledNavButton(int ind, String text, IconData icon) {
+  Widget customStyledNavButton(int ind, String text, dynamic icon) {
     return NavButton(
       onTap: () {
         HapticFeedback.lightImpact();

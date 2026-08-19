@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/services.dart' show DeviceOrientation, SystemChrome;
 import 'package:http/http.dart' as http; // For HTTP requests
 import 'package:udghosh/DashBoard/pages/dashboard.dart'; // Your dashboard page
@@ -6,7 +8,38 @@ import 'package:url_launcher/url_launcher.dart'; // To launch App Store URL
 
 import 'utils.dart';
 
+@pragma('vm:entry-point')
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp();
+  debugPrint('Handling background message: ${message.messageId}');
+}
+
 Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+
+  // --- FCM Setup starts here ---
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
+  FirebaseMessaging messaging = FirebaseMessaging.instance;
+  NotificationSettings settings = await messaging.requestPermission(
+    alert: true,
+    badge: true,
+    sound: true,
+  );
+
+  if (settings.authorizationStatus == AuthorizationStatus.authorized ||
+      settings.authorizationStatus == AuthorizationStatus.provisional) {
+    await messaging.subscribeToTopic('all_users');
+    debugPrint('Subscribed to all_users topic');
+  }
+
+  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    debugPrint('Foreground notification: ${message.notification?.title}');
+  });
+
+  // --- FCM Setup ends here ---
+
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,

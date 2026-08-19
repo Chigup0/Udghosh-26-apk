@@ -368,7 +368,7 @@ void enlargeCoreTeamCard(BuildContext context, dynamic data) {
 }
 
 Widget _socialButton({
-  required IconData icon,
+  required dynamic icon,
   required LinearGradient gradient,
   required String url,
 }) {
@@ -406,7 +406,7 @@ String formatName(String name) {
   return name.toUpperCase();
 }
 
-Widget mediaIcons(IconData icon, Color iconColor, double iconSize, String url) {
+Widget mediaIcons(dynamic icon, Color iconColor, double iconSize, String url) {
   return Container(
     alignment: Alignment.center,
     width: 40,

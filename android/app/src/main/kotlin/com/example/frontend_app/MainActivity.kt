@@ -1,4 +1,4 @@
-package org.udghosh.iitk
+package com.udghosh26user.app
 
 import io.flutter.embedding.android.FlutterActivity
 

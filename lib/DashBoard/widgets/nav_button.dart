@@ -17,7 +17,7 @@ class NavButton extends StatefulWidget {
   final Function() onTap;
   final bool isActive;
   final String text;
-  final IconData icon;
+  final dynamic icon;
   final Curve curve;
   final double textSize;
   final double iconSize;

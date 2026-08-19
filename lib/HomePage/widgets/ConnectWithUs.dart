@@ -61,7 +61,7 @@ class ConnectWithUs extends StatelessWidget {
   }
 
   // Helper method for regular social icons
-  Widget _buildSocialIcon(IconData icon, Color color, String url) {
+  Widget _buildSocialIcon(dynamic icon, Color color, String url) {
     return InkWell(
       onTap: () {
         launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
@@ -137,7 +137,7 @@ Widget mediaIcon(IconData icon, Color color, double iconSize, String url) {
 }
 
 class GradientIcon extends StatelessWidget {
-  final IconData icon;
+  final dynamic icon;
   final double size;
   final Gradient gradient;
 

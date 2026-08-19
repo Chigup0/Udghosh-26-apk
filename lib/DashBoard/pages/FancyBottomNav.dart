@@ -40,7 +40,7 @@ class FancyBottomNav extends StatelessWidget {
     );
   }
 
-  Widget _buildNavItem(int ind, String text, IconData icon) {
+  Widget _buildNavItem(int ind, String text, dynamic icon) {
     final bool isActive = index == ind;
 
     return GestureDetector(

@@ -401,7 +401,7 @@ class _SchedulePageState extends State<SchedulePage>
     );
   }
 
-  Widget sportChip(String sport, IconData icon, int index) {
+  Widget sportChip(String sport, dynamic icon, int index) {
     return Padding(
       padding: const EdgeInsets.only(right: 8),
       child: customChip2(
@@ -504,7 +504,7 @@ class OctagonalIconButton extends StatelessWidget {
     required this.bgColor,
   });
   final Function() onTap;
-  final IconData icon;
+  final dynamic icon;
   final Color iconColor;
   final Color bgColor;
 

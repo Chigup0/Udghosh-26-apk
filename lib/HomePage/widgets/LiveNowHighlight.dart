@@ -233,7 +233,7 @@ class _LiveNowHighLightState extends State<LiveNowHighLight> {
     );
   }
 
-  Widget _buildSportChip(String sportName, IconData icon, int count) {
+  Widget _buildSportChip(String sportName, dynamic icon, int count) {
     bool isActive = chipSportValue == sportName;
 
     return Container(

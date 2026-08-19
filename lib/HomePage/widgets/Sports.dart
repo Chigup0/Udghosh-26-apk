@@ -84,7 +84,7 @@ class _SportChipsState extends State<SportChips> {
                           child: CircleAvatar(
                             radius: 20,
                             backgroundColor: Colors.transparent,
-                            child: Icon(sport['icon'] as IconData, size: 35),
+                            child: Icon(sport['icon'] as dynamic, size: 35),
                           ),
                         ),
                       ),
