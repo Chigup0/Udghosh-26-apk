@@ -197,7 +197,7 @@ void enlargeCoreTeamCard(BuildContext context, dynamic data) {
 
   showDialog(
     context: context,
-    barrierColor: Colors.black.withOpacity(0.7),
+    barrierColor: Colors.black.withValues(alpha: 0.7),
     builder: (context) {
       return Center(
         child: Material(
@@ -210,14 +210,14 @@ void enlargeCoreTeamCard(BuildContext context, dynamic data) {
               borderRadius: BorderRadius.circular(25),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.blueAccent.withOpacity(0.6),
+                  color: Colors.blueAccent.withValues(alpha: 0.6),
                   blurRadius: 20,
                   spreadRadius: 2,
                   offset: const Offset(0, 10),
                 ),
               ],
               border: Border.all(
-                color: Colors.blueAccent.withOpacity(0.7),
+                color: Colors.blueAccent.withValues(alpha: 0.7),
                 width: 2,
               ),
             ),
@@ -238,7 +238,7 @@ void enlargeCoreTeamCard(BuildContext context, dynamic data) {
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.blueAccent.withOpacity(0.5),
+                          color: Colors.blueAccent.withValues(alpha: 0.5),
                           blurRadius: 15,
                           spreadRadius: 2,
                         ),
@@ -390,7 +390,7 @@ Widget _socialButton({
         gradient: gradient,
         boxShadow: [
           BoxShadow(
-            color: Colors.white.withOpacity(0.2),
+            color: Colors.white.withValues(alpha: 0.2),
             blurRadius: 8,
             spreadRadius: 1,
           ),
@@ -484,7 +484,7 @@ class TeamLogo extends StatelessWidget {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               gradient: RadialGradient(
-                colors: [Colors.white.withOpacity(0.25), Colors.transparent],
+                colors: [Colors.white.withValues(alpha: 0.25), Colors.transparent],
                 radius: 0.8,
                 center: Alignment.topLeft,
               ),
@@ -500,7 +500,7 @@ class TeamLogo extends StatelessWidget {
               fontWeight: FontWeight.bold,
               color: Colors.white,
               shadows: [
-                Shadow(color: Colors.black.withOpacity(0.7), blurRadius: 5),
+                Shadow(color: Colors.black.withValues(alpha: 0.7), blurRadius: 5),
               ],
             ),
           ),

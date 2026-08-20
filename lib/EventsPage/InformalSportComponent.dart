@@ -137,7 +137,7 @@ class _InformalCarouselPortraitState extends State<InformalCarouselPortrait> {
           'No informal sports events',
           style: TextStyle(
             fontFamily: globalFontFamily,
-            color: lightTextColor.withOpacity(0.6),
+            color: lightTextColor.withValues(alpha: 0.6),
             fontSize: 16,
           ),
         ),
@@ -157,12 +157,12 @@ class _InformalCarouselPortraitState extends State<InformalCarouselPortrait> {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: Color(0xFF1E3A8A).withOpacity(0.3),
+              color: Color(0xFF1E3A8A).withValues(alpha: 0.3),
               width: 1,
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.2),
+                color: Colors.black.withValues(alpha: 0.2),
                 blurRadius: 10,
                 offset: Offset(0, 4),
               ),
@@ -184,8 +184,8 @@ class _InformalCarouselPortraitState extends State<InformalCarouselPortrait> {
                         end: Alignment.bottomCenter,
                         colors: [
                           Colors.transparent,
-                          Color(0xFF0F172A).withOpacity(0.7),
-                          Color(0xFF0F172A).withOpacity(0.9),
+                          Color(0xFF0F172A).withValues(alpha: 0.7),
+                          Color(0xFF0F172A).withValues(alpha: 0.9),
                         ],
                         stops: [0.0, 0.6, 1.0],
                       ),
@@ -224,10 +224,10 @@ class _InformalCarouselPortraitState extends State<InformalCarouselPortrait> {
                           vertical: 10,
                         ),
                         decoration: BoxDecoration(
-                          color: Color(0xFF1E3A8A).withOpacity(0.15),
+                          color: Color(0xFF1E3A8A).withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
-                            color: Color(0xFF1E3A8A).withOpacity(0.3),
+                            color: Color(0xFF1E3A8A).withValues(alpha: 0.3),
                             width: 1,
                           ),
                         ),
@@ -292,7 +292,7 @@ class _InformalCarouselPortraitState extends State<InformalCarouselPortrait> {
                                   child: Text(
                                     event.venue,
                                     style: TextStyle(
-                                      color: Colors.white.withOpacity(0.9),
+                                      color: Colors.white.withValues(alpha: 0.9),
                                       fontSize: 13,
                                       fontWeight: FontWeight.w400,
                                       fontFamily: globalFontFamily,
@@ -324,11 +324,11 @@ class _InformalCarouselPortraitState extends State<InformalCarouselPortrait> {
         fit: BoxFit.cover,
         errorBuilder: (context, error, stackTrace) {
           return Container(
-            color: Color(0xFF1E3A8A).withOpacity(0.1),
+            color: Color(0xFF1E3A8A).withValues(alpha: 0.1),
             child: Center(
               child: Icon(
                 Icons.sports_soccer,
-                color: Color(0xFF1E3A8A).withOpacity(0.5),
+                color: Color(0xFF1E3A8A).withValues(alpha: 0.5),
                 size: 48,
               ),
             ),
@@ -341,7 +341,7 @@ class _InformalCarouselPortraitState extends State<InformalCarouselPortrait> {
       imageUrl: event.fullImageUrl,
       fit: BoxFit.cover,
       placeholder: (context, url) => Container(
-        color: Color(0xFF1E3A8A).withOpacity(0.1),
+        color: Color(0xFF1E3A8A).withValues(alpha: 0.1),
         child: Center(
           child: CircularProgressIndicator(
             strokeWidth: 2,
@@ -354,11 +354,11 @@ class _InformalCarouselPortraitState extends State<InformalCarouselPortrait> {
         fit: BoxFit.cover,
         errorBuilder: (context, error, stackTrace) {
           return Container(
-            color: Color(0xFF1E3A8A).withOpacity(0.1),
+            color: Color(0xFF1E3A8A).withValues(alpha: 0.1),
             child: Center(
               child: Icon(
                 Icons.sports_soccer,
-                color: Color(0xFF1E3A8A).withOpacity(0.5),
+                color: Color(0xFF1E3A8A).withValues(alpha: 0.5),
                 size: 48,
               ),
             ),

@@ -70,7 +70,7 @@ class _HomePageState extends State<HomePage> {
                       opacity: expanded ? 0.03 : 0.01,
                       child: Container(
                         decoration: BoxDecoration(
-                          color: Color(0xFF00F5FF).withOpacity(0.02),
+                          color: Color(0xFF00F5FF).withValues(alpha: 0.02),
                         ),
                       ),
                     ),
@@ -94,10 +94,10 @@ class _HomePageState extends State<HomePage> {
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(20),
                                     border: Border.all(
-                                      color: Color(0xFF00F5FF).withOpacity(0.2),
+                                      color: Color(0xFF00F5FF).withValues(alpha: 0.2),
                                       width: 1,
                                     ),
-                                    color: Color(0xFF00F5FF).withOpacity(0.05),
+                                    color: Color(0xFF00F5FF).withValues(alpha: 0.05),
                                   ),
                                   child: Image.asset(
                                     'assets/logo/logo.png',
@@ -125,7 +125,7 @@ class _HomePageState extends State<HomePage> {
                                         fontFamily: globalFontFamily,
                                         fontSize: 15, // Increased from 13
                                         fontWeight: FontWeight.w400,
-                                        color: Colors.white.withOpacity(0.7),
+                                        color: Colors.white.withValues(alpha: 0.7),
                                         letterSpacing: 1.8,
                                       ),
                                     ),
@@ -146,14 +146,14 @@ class _HomePageState extends State<HomePage> {
                                           decoration: BoxDecoration(
                                             color: Color(
                                               0xFF00F5FF,
-                                            ).withOpacity(0.15),
+                                            ).withValues(alpha: 0.15),
                                             borderRadius: BorderRadius.circular(
                                               20,
                                             ),
                                             border: Border.all(
                                               color: Color(
                                                 0xFF00F5FF,
-                                              ).withOpacity(0.3),
+                                              ).withValues(alpha: 0.3),
                                               width: 1,
                                             ),
                                           ),
@@ -174,7 +174,7 @@ class _HomePageState extends State<HomePage> {
                                         Container(
                                           height: 22, // Slightly increased
                                           width: 1,
-                                          color: Colors.white.withOpacity(0.2),
+                                          color: Colors.white.withValues(alpha: 0.2),
                                         ),
 
                                         SizedBox(width: 15),
@@ -185,8 +185,8 @@ class _HomePageState extends State<HomePage> {
                                             fontFamily: globalFontFamily,
                                             fontSize: 14, // Increased from 12
                                             fontWeight: FontWeight.w500,
-                                            color: Colors.white.withOpacity(
-                                              0.8,
+                                            color: Colors.white.withValues(
+                                              alpha: 0.8,
                                             ),
                                             letterSpacing: 1.5,
                                           ),

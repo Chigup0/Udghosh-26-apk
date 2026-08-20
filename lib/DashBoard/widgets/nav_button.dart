@@ -70,15 +70,15 @@ class _NavButtonState extends State<NavButton> with TickerProviderStateMixin {
                 color: widget.isActive
                     ? dark
                           ? darkBlueColor
-                          : blueColor.withOpacity(0.4)
-                    : Colors.grey.withOpacity(0),
+                          : blueColor.withValues(alpha: 0.4)
+                    : Colors.grey.withValues(alpha: 0),
                 spreadRadius: 2,
                 blurRadius: 4,
                 offset: const Offset(0, 2),
               ),
             ],
 
-            color: _expanded ? blueColor.withOpacity(0) : blueColor,
+            color: _expanded ? blueColor.withValues(alpha: 0) : blueColor,
             borderRadius: BorderRadius.circular(40),
           ),
           child: FittedBox(

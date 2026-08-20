@@ -109,7 +109,7 @@ class _NoticesPageState extends State<NoticesPage> {
                               45,
                               48,
                               200,
-                            ).withOpacity(0.6),
+                            ).withValues(alpha: 0.6),
                           ),
                           const SizedBox(height: 16),
                           Text(
@@ -122,7 +122,7 @@ class _NoticesPageState extends State<NoticesPage> {
                                 45,
                                 48,
                                 200,
-                              ).withOpacity(0.8),
+                              ).withValues(alpha: 0.8),
                             ),
                           ),
                         ],
@@ -162,8 +162,8 @@ class NoticeCard extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            const Color.fromARGB(255, 1, 3, 41).withOpacity(0.7),
-            const Color.fromARGB(255, 12, 40, 63).withOpacity(0.1),
+            const Color.fromARGB(255, 1, 3, 41).withValues(alpha: 0.7),
+            const Color.fromARGB(255, 12, 40, 63).withValues(alpha: 0.1),
           ],
         ),
         borderRadius: BorderRadius.circular(12),
@@ -173,7 +173,7 @@ class NoticeCard extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: const Color.fromARGB(255, 45, 48, 200).withOpacity(0.2),
+            color: const Color.fromARGB(255, 45, 48, 200).withValues(alpha: 0.2),
             blurRadius: 10,
             spreadRadius: 2,
           ),
@@ -199,7 +199,7 @@ class NoticeCard extends StatelessWidget {
                       45,
                       48,
                       200,
-                    ).withOpacity(0.5),
+                    ).withValues(alpha: 0.5),
                     blurRadius: 5,
                   ),
                 ],

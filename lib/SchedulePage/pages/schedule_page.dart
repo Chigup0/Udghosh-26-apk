@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print, library_private_types_in_public_api, prefer_const_constructors_in_immutables, unused_local_variable
+
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
@@ -527,7 +529,7 @@ class OctagonalIconButton extends StatelessWidget {
               // color: Colors.white,
               decoration: BoxDecoration(
                 // borderRadius: BorderRadius.circular(10)
-                color: Colors.white.withOpacity(0.8),
+                color: Colors.white.withValues(alpha: 0.8),
               ),
               child: Icon(icon, color: iconColor),
             ),

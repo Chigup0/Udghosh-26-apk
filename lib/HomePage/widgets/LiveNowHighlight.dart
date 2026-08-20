@@ -248,7 +248,7 @@ class _LiveNowHighLightState extends State<LiveNowHighLight> {
         color: Colors.transparent,
         child: InkWell(
           onTap: () => onChipTap(sportName),
-          splashColor: yellowColor.withOpacity(0.3),
+          splashColor: yellowColor.withValues(alpha: 0.3),
           borderRadius: BorderRadius.circular(30.0),
           child: Padding(
             padding: const EdgeInsets.symmetric(
@@ -281,8 +281,8 @@ class _LiveNowHighLightState extends State<LiveNowHighLight> {
                   ),
                   decoration: BoxDecoration(
                     color: isActive
-                        ? Colors.white.withOpacity(0.2)
-                        : yellowColor.withOpacity(0.8),
+                        ? Colors.white.withValues(alpha: 0.2)
+                        : yellowColor.withValues(alpha: 0.8),
                     borderRadius: BorderRadius.circular(12.0),
                   ),
                   child: Text(
