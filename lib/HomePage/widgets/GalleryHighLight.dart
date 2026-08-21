@@ -71,12 +71,12 @@ class GalleryHighLight extends StatelessWidget {
                         end: Alignment.bottomRight,
                       ),
                       border: Border.all(
-                        color: const Color(0xFF3B82F6).withOpacity(0.3),
+                        color: const Color(0xFF3B82F6).withValues(alpha: 0.3),
                         width: 1,
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFF1E3A8A).withOpacity(0.2),
+                          color: const Color(0xFF1E3A8A).withValues(alpha: 0.2),
                           blurRadius: 10,
                           offset: const Offset(2, 4),
                         ),
@@ -113,12 +113,12 @@ class GalleryHighLight extends StatelessWidget {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
-                      color: const Color(0xFF1E3A8A).withOpacity(0.2),
+                      color: const Color(0xFF1E3A8A).withValues(alpha: 0.2),
                       width: 1,
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.15),
+                        color: Colors.black.withValues(alpha: 0.15),
                         blurRadius: 8,
                         offset: const Offset(2, 4),
                       ),
@@ -164,7 +164,7 @@ class GalleryHighLight extends StatelessWidget {
                                   end: Alignment.bottomCenter,
                                   colors: [
                                     Colors.transparent,
-                                    const Color(0xFF0F172A).withOpacity(0.3),
+                                    const Color(0xFF0F172A).withValues(alpha: 0.3),
                                   ],
                                 ),
                               ),

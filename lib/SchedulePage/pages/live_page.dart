@@ -1,6 +1,7 @@
+// ignore_for_file: avoid_print, unused_local_variable, non_constant_identifier_names
+
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:udghosh/DashBoard/pages/dashboard.dart';
 import 'package:udghosh/SchedulePage/models/LiveMatchModel.dart';
@@ -902,6 +903,7 @@ class _LivePageState extends State<LivePage> {
               margin: const EdgeInsets.symmetric(vertical: 8),
               padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
               decoration: BoxDecoration(
+                // ignore: unrelated_type_equality_checks
                 color: match.active == 1 ? Colors.green : Colors.red,
                 borderRadius: BorderRadius.circular(8),
               ),

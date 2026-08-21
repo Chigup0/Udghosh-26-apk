@@ -67,7 +67,7 @@ class _SportChipsState extends State<SportChips> {
                             borderRadius: BorderRadius.circular(50),
                             boxShadow: [
                               BoxShadow(
-                                color: const Color.fromARGB(255, 31, 0, 171).withOpacity(0.3),
+                                color: const Color.fromARGB(255, 31, 0, 171).withValues(alpha: 0.3),
                                 spreadRadius: 1,
                                 blurRadius: 5,
                                 offset: Offset(
@@ -84,7 +84,7 @@ class _SportChipsState extends State<SportChips> {
                           child: CircleAvatar(
                             radius: 20,
                             backgroundColor: Colors.transparent,
-                            child: Icon(sport['icon'] as IconData, size: 35),
+                            child: Icon(sport['icon'] as dynamic, size: 35),
                           ),
                         ),
                       ),

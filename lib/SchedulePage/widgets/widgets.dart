@@ -53,7 +53,7 @@ Widget horizontalLogoWithCollegeName(
 
 Widget customChips(
   String sport,
-  IconData icon,
+  dynamic icon,
   bool isActive,
   Function() onTap,
 ) {
@@ -106,7 +106,7 @@ Widget customChips(
 
 Widget customChip2(
   String sport,
-  IconData icon,
+  dynamic icon,
   bool isActive,
   Function() onTap,
 ) {
@@ -172,7 +172,7 @@ Widget customChip2(
 
 Widget customChips1(
   String sport,
-  IconData icon,
+  dynamic icon,
   bool isActive,
   Function() onTap,
 ) {

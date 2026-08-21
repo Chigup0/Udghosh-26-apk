@@ -54,7 +54,7 @@ class PlayerProfilePage extends StatelessWidget {
                 BoxShadow(
                   color: dark
                       ? Colors.green.shade900
-                      : blueColor.withOpacity(0.4),
+                      : blueColor.withValues(alpha: 0.4),
                   spreadRadius: 2,
                   blurRadius: 4,
                   offset: const Offset(0, 1),

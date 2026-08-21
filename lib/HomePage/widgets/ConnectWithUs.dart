@@ -10,9 +10,9 @@ class ConnectWithUs extends StatelessWidget {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       decoration: BoxDecoration(
-        color: Color(0xFF1E3A8A).withOpacity(0.05),
+        color: Color(0xFF1E3A8A).withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Color(0xFF1E3A8A).withOpacity(0.1), width: 1),
+        border: Border.all(color: Color(0xFF1E3A8A).withValues(alpha: 0.1), width: 1),
       ),
       child: Column(
         children: [
@@ -61,7 +61,7 @@ class ConnectWithUs extends StatelessWidget {
   }
 
   // Helper method for regular social icons
-  Widget _buildSocialIcon(IconData icon, Color color, String url) {
+  Widget _buildSocialIcon(dynamic icon, Color color, String url) {
     return InkWell(
       onTap: () {
         launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
@@ -70,9 +70,9 @@ class ConnectWithUs extends StatelessWidget {
       child: Container(
         padding: EdgeInsets.all(10),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.1),
+          color: Colors.white.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: color.withOpacity(0.2), width: 1),
+          border: Border.all(color: color.withValues(alpha: 0.2), width: 1),
         ),
         child: Icon(icon, size: 20, color: color),
       ),
@@ -94,17 +94,17 @@ class ConnectWithUs extends StatelessWidget {
         decoration: BoxDecoration(
           // gradient: LinearGradient(
           //   colors: [
-          //     Color(0xFF833AB4).withOpacity(0.15),
-          //     Color(0xFFC13584).withOpacity(0.15),
-          //     Color(0xFFF56040).withOpacity(0.15),
+          //     Color(0xFF833AB4).withValues(alpha: 0.15),
+          //     Color(0xFFC13584).withValues(alpha: 0.15),
+          //     Color(0xFFF56040).withValues(alpha: 0.15),
           //   ],
           //   begin: Alignment.topLeft,
           //   end: Alignment.bottomRight,
           // ),
-          color: Colors.white.withOpacity(0.1),
+          color: Colors.white.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: Color(0xFFC13584).withOpacity(0.3),
+            color: Color(0xFFC13584).withValues(alpha: 0.3),
             width: 1,
           ),
         ),
@@ -137,7 +137,7 @@ Widget mediaIcon(IconData icon, Color color, double iconSize, String url) {
 }
 
 class GradientIcon extends StatelessWidget {
-  final IconData icon;
+  final dynamic icon;
   final double size;
   final Gradient gradient;
 

@@ -46,9 +46,9 @@ class ContactUs extends StatelessWidget {
         //   child: Container(
         //     padding: const EdgeInsets.all(12),
         //     decoration: BoxDecoration(
-        //       color: Color(0xFF1E3A8A).withOpacity(0.08),
+        //       color: Color(0xFF1E3A8A).withValues(alpha: 0.08),
         //       border: Border.all(
-        //         color: Color(0xFF1E3A8A).withOpacity(0.2),
+        //         color: Color(0xFF1E3A8A).withValues(alpha: 0.2),
         //         width: 1,
         //       ),
         //       borderRadius: BorderRadius.circular(12),
@@ -58,7 +58,7 @@ class ContactUs extends StatelessWidget {
         //         Container(
         //           padding: EdgeInsets.all(6),
         //           decoration: BoxDecoration(
-        //             color: Color(0xFF1E3A8A).withOpacity(0.15),
+        //             color: Color(0xFF1E3A8A).withValues(alpha: 0.15),
         //             borderRadius: BorderRadius.circular(8),
         //           ),
         //           child: Icon(
@@ -108,9 +108,9 @@ class ContactUs extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Color(0xFF1E3A8A).withOpacity(0.08),
+              color: Color(0xFF1E3A8A).withValues(alpha: 0.08),
               border: Border.all(
-                color: Color(0xFF1E3A8A).withOpacity(0.2),
+                color: Color(0xFF1E3A8A).withValues(alpha: 0.2),
                 width: 1,
               ),
               borderRadius: BorderRadius.circular(12),
@@ -120,7 +120,7 @@ class ContactUs extends StatelessWidget {
                 Container(
                   padding: EdgeInsets.all(6),
                   decoration: BoxDecoration(
-                    color: Color(0xFF1E3A8A).withOpacity(0.15),
+                    color: Color(0xFF1E3A8A).withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Icon(
@@ -155,9 +155,9 @@ class ContactUs extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Color(0xFF1E3A8A).withOpacity(0.08),
+              color: Color(0xFF1E3A8A).withValues(alpha: 0.08),
               border: Border.all(
-                color: Color(0xFF1E3A8A).withOpacity(0.2),
+                color: Color(0xFF1E3A8A).withValues(alpha: 0.2),
                 width: 1,
               ),
               borderRadius: BorderRadius.circular(12),
@@ -167,7 +167,7 @@ class ContactUs extends StatelessWidget {
                 Container(
                   padding: EdgeInsets.all(6),
                   decoration: BoxDecoration(
-                    color: Color(0xFF1E3A8A).withOpacity(0.15),
+                    color: Color(0xFF1E3A8A).withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Icon(
@@ -202,9 +202,9 @@ class ContactUs extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Color(0xFF1E3A8A).withOpacity(0.08),
+              color: Color(0xFF1E3A8A).withValues(alpha: 0.08),
               border: Border.all(
-                color: Color(0xFF1E3A8A).withOpacity(0.2),
+                color: Color(0xFF1E3A8A).withValues(alpha: 0.2),
                 width: 1,
               ),
               borderRadius: BorderRadius.circular(12),
@@ -214,7 +214,7 @@ class ContactUs extends StatelessWidget {
                 Container(
                   padding: EdgeInsets.all(6),
                   decoration: BoxDecoration(
-                    color: Color(0xFF1E3A8A).withOpacity(0.15),
+                    color: Color(0xFF1E3A8A).withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Icon(
@@ -249,9 +249,9 @@ class ContactUs extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Color(0xFF1E3A8A).withOpacity(0.08),
+              color: Color(0xFF1E3A8A).withValues(alpha: 0.08),
               border: Border.all(
-                color: Color(0xFF1E3A8A).withOpacity(0.2),
+                color: Color(0xFF1E3A8A).withValues(alpha: 0.2),
                 width: 1,
               ),
               borderRadius: BorderRadius.circular(12),
@@ -261,7 +261,7 @@ class ContactUs extends StatelessWidget {
                 Container(
                   padding: EdgeInsets.all(6),
                   decoration: BoxDecoration(
-                    color: Color(0xFF1E3A8A).withOpacity(0.15),
+                    color: Color(0xFF1E3A8A).withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Icon(
