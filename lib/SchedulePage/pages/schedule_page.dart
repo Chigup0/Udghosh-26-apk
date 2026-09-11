@@ -3,9 +3,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:udghosh/DashBoard/pages/dashboard.dart';
-import 'package:udghosh/SchedulePage/pages/make_live_page.dart';
 import 'package:udghosh/api.dart';
 import 'package:udghosh/utils.dart';
 import 'package:flutter/services.dart';
@@ -37,7 +34,6 @@ class _SchedulePageState extends State<SchedulePage>
     'matches',
     'getCompletedMatches',
   ];
-  bool logged = false;
   List<int> pages = [1, 1, 1];
   List<bool> isLoading = [false, false, false];
   List<int> currSport = [0, 0, 0];
@@ -68,7 +64,6 @@ class _SchedulePageState extends State<SchedulePage>
   void initState() {
     super.initState();
     apiUrls = apiUrlsStudent;
-    _checkLogged();
 
     if (widget.defaultIndex != -1) {
       currSport = [
@@ -84,14 +79,6 @@ class _SchedulePageState extends State<SchedulePage>
     _fetchMatches(
       currentIndex == 1 ? 'All' : sportsList[currSport[currentIndex]]['name'],
     );
-  }
-
-  Future<void> _checkLogged() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    setState(() {
-      logged = prefs.getString('token') != null;
-    });
   }
 
   @override
@@ -144,34 +131,6 @@ class _SchedulePageState extends State<SchedulePage>
                       ),
                       child: pageTitleText('Matches'),
                     ),
-                    logged
-                        ? Padding(
-                            padding: const EdgeInsets.only(
-                              top: 40.0,
-                              right: 16.0,
-                            ),
-                            child: octagonalButton(
-                              "Logout",
-                              12,
-                              18,
-                              Colors.red.shade400,
-                              Colors.red.shade800,
-                              () async {
-                                SharedPreferences prefs =
-                                    await SharedPreferences.getInstance();
-                                await prefs.remove('token');
-                                await prefs.remove('adminSport');
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        const DashBoard(index: 1),
-                                  ),
-                                );
-                              },
-                            ),
-                          )
-                        : Container(),
                   ],
                 ),
               ],

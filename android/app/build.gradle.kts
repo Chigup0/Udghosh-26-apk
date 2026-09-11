@@ -30,7 +30,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.udghosh26user.app"
+        applicationId = "com.udg26main.app"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode

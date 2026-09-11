@@ -6,6 +6,8 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/services.dart' show DeviceOrientation, SystemChrome;
 import 'package:http/http.dart' as http; // For HTTP requests
 import 'package:udghosh/DashBoard/pages/dashboard.dart'; // Your dashboard page
+import 'package:udghosh/services/auth_provider.dart';
+import 'package:udghosh/theme/neo_theme.dart';
 import 'package:url_launcher/url_launcher.dart'; // To launch App Store URL
 
 import 'utils.dart';
@@ -41,6 +43,8 @@ Future<void> main() async {
   });
 
   // --- FCM Setup ends here ---
+
+  await AuthController.instance.restore();
 
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations([
@@ -303,12 +307,7 @@ class _MyAppState extends State<MyApp> {
       return MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Udghosh Sports',
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color.fromARGB(255, 0, 0, 0),
-          ),
-          useMaterial3: true,
-        ),
+        theme: NeoTheme.themeData,
         home: const DashBoard(index: 0),
       );
     }

@@ -1,15 +1,11 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:udghosh/SchedulePage/widgets/widgets.dart';
 import 'package:udghosh/utils.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../widgets/widgets.dart';
 import '../models/MatchesModel.dart';
-import '../pages/admin_login_page.dart';
-import '../pages/make_live_page.dart';
 import '../pages/schedule_page.dart';
 
 class UpcomingMatchCard extends StatelessWidget {
@@ -33,28 +29,6 @@ class UpcomingMatchCard extends StatelessWidget {
         alignment: Alignment.topCenter,
         children: [
           InkWell(
-            onLongPress: () async {
-              HapticFeedback.heavyImpact();
-              SharedPreferences prefs = await SharedPreferences.getInstance();
-              token = prefs.getString('token') ?? '';
-              if (token != '') {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => MakeMatchLive(match: match),
-                  ),
-                );
-              } else {
-                errorSnackMsg('Please login to continue');
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const AdminLoginPage(),
-                  ),
-                );
-                return;
-              }
-            },
             child: Container(
               width: size.width - horizontalPadding * 2,
               decoration: BoxDecoration(
