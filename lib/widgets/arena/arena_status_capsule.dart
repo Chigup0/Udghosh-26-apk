@@ -30,12 +30,26 @@ class ArenaStatusCapsule extends StatelessWidget {
             children: [
               const _PulsingDot(color: Colors.white),
               const SizedBox(width: 5),
-              Text('LIVE', style: ArenaText.label(size: 10.5, color: Colors.white, tracking: 1.1)),
+              Text(
+                'LIVE',
+                style: ArenaText.label(
+                  size: 10.5,
+                  color: Colors.white,
+                  tracking: 1.1,
+                ),
+              ),
               if (liveClock != null) ...[
                 const SizedBox(width: 6),
-                Container(width: 1, height: 10, color: Colors.white.withValues(alpha: 0.4)),
+                Container(
+                  width: 1,
+                  height: 10,
+                  color: Colors.white.withValues(alpha: 0.4),
+                ),
                 const SizedBox(width: 6),
-                Text(liveClock!, style: ArenaText.mono(size: 11, color: Colors.white)),
+                Text(
+                  liveClock!,
+                  style: ArenaText.mono(size: 11, color: Colors.white),
+                ),
               ],
             ],
           ),
@@ -56,7 +70,10 @@ class ArenaStatusCapsule extends StatelessWidget {
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           decoration: const BoxDecoration(color: ArenaColors.borderStrong),
-          child: Text('FT', style: ArenaText.label(size: 10.5, color: ArenaColors.textPrimary)),
+          child: Text(
+            'FT',
+            style: ArenaText.label(size: 10.5, color: ArenaColors.textPrimary),
+          ),
         );
     }
   }
@@ -70,7 +87,8 @@ class _PulsingDot extends StatefulWidget {
   State<_PulsingDot> createState() => _PulsingDotState();
 }
 
-class _PulsingDotState extends State<_PulsingDot> with SingleTickerProviderStateMixin {
+class _PulsingDotState extends State<_PulsingDot>
+    with SingleTickerProviderStateMixin {
   late final AnimationController _controller = AnimationController(
     vsync: this,
     duration: const Duration(milliseconds: 900),
@@ -85,9 +103,10 @@ class _PulsingDotState extends State<_PulsingDot> with SingleTickerProviderState
   @override
   Widget build(BuildContext context) {
     return FadeTransition(
-      opacity: Tween(begin: 0.45, end: 1.0).animate(
-        CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-      ),
+      opacity: Tween(
+        begin: 0.45,
+        end: 1.0,
+      ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut)),
       child: Container(
         width: 6,
         height: 6,

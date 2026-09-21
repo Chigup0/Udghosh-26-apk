@@ -391,9 +391,6 @@ class _LivePageState extends State<LivePage> {
   }
 
   Widget _buildScoreDisplay() {
-    return liveMatchScore(
-      widget.match,
-      compact: false,
-    );
+    return liveMatchScore(widget.match, compact: false);
   }
 }

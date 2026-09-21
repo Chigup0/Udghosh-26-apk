@@ -1,15 +1,16 @@
-import 'package:flutter/material.dart';
+import 'package:flutter_neumorphic_plus/flutter_neumorphic.dart';
 import 'package:udghosh/theme/neo_theme.dart';
 
-/// A pillowy, raised neomorphic surface. This is the base building block
-/// for every card in the app — wrap content in it instead of hand-rolling
-/// `BoxDecoration`s so the shadow pair stays consistent everywhere.
+/// A raised neumorphic surface — the base building block for every card.
+///
+/// Backed by `flutter_neumorphic_plus`, so the bevel is computed from the
+/// theme's light-source vector rather than a hand-rolled shadow pair.
 class NeoCard extends StatelessWidget {
   const NeoCard({
     super.key,
     required this.child,
     this.radius = NeoRadii.card,
-    this.color = NeoColors.surface,
+    this.color,
     this.padding = const EdgeInsets.all(16),
     this.margin,
     this.onTap,
@@ -18,7 +19,7 @@ class NeoCard extends StatelessWidget {
 
   final Widget child;
   final double radius;
-  final Color color;
+  final Color? color;
   final EdgeInsetsGeometry padding;
   final EdgeInsetsGeometry? margin;
   final VoidCallback? onTap;
@@ -26,56 +27,73 @@ class NeoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final content = Container(
-      margin: margin,
-      padding: padding,
-      decoration: small
-          ? NeoTheme.raisedSmall(radius: radius, color: color)
-          : NeoTheme.raised(radius: radius, color: color),
-      child: child,
+    final style = NeoTheme.raisedStyle(
+      radius: radius,
+      depth: small ? NeoDepth.chip : NeoDepth.card,
+      color: color,
     );
 
-    if (onTap == null) return content;
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(radius),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(onTap: onTap, child: content),
+    if (onTap != null) {
+      return Padding(
+        padding: margin ?? EdgeInsets.zero,
+        child: NeumorphicButton(
+          onPressed: onTap,
+          style: style,
+          minDistance: NeoDepth.pressed,
+          padding: padding.resolve(TextDirection.ltr),
+          child: child,
+        ),
+      );
+    }
+
+    return Padding(
+      padding: margin ?? EdgeInsets.zero,
+      child: Neumorphic(
+        style: style,
+        padding: padding.resolve(TextDirection.ltr),
+        child: child,
       ),
     );
   }
 }
 
-/// A recessed/pushed-in surface — used for score tracks, OTP digit boxes,
-/// segmented-control rails and search fields.
+/// A recessed surface — score tracks, OTP digits, search fields, chip rails.
+/// Rendered with a negative depth so content reads as physically pressed
+/// into the surface behind it.
 class NeoInset extends StatelessWidget {
   const NeoInset({
     super.key,
     required this.child,
     this.radius = NeoRadii.chip,
-    this.color = NeoColors.surfaceRecessed,
+    this.color,
     this.padding = const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
     this.active = false,
   });
 
   final Widget child;
   final double radius;
-  final Color color;
+  final Color? color;
   final EdgeInsetsGeometry padding;
   final bool active;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: padding,
-      decoration: NeoTheme.inset(radius: radius, color: color, active: active),
+    return Neumorphic(
+      style: NeoTheme.insetStyle(
+        radius: radius,
+        // An active field presses in a little further — the only state cue
+        // needed now that depth is doing the work a border used to.
+        depth: active ? NeoDepth.inset - 1 : NeoDepth.inset,
+        color: color,
+      ),
+      padding: padding.resolve(TextDirection.ltr),
       child: child,
     );
   }
 }
 
-/// Circular neomorphic icon/avatar button (44x44 by the spec) used for the
-/// notification bell and profile avatar in the app bar.
+/// Circular neumorphic icon/avatar button (44×44) used for the app bar's
+/// bell and profile avatar.
 class NeoCircleButton extends StatelessWidget {
   const NeoCircleButton({
     super.key,
@@ -98,22 +116,12 @@ class NeoCircleButton extends StatelessWidget {
       child: Stack(
         clipBehavior: Clip.none,
         children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(size / 2),
-            child: Material(
-              color: Colors.transparent,
-              child: InkWell(
-                onTap: onTap,
-                child: Ink(
-                  decoration: BoxDecoration(
-                    color: NeoColors.surface,
-                    shape: BoxShape.circle,
-                    boxShadow: NeoShadows.raisedSmall(),
-                  ),
-                  child: Center(child: child),
-                ),
-              ),
-            ),
+          NeumorphicButton(
+            onPressed: onTap,
+            style: NeoTheme.circleStyle(),
+            minDistance: NeoDepth.pressed,
+            padding: EdgeInsets.zero,
+            child: Center(child: child),
           ),
           if (badge)
             Positioned(
@@ -123,9 +131,8 @@ class NeoCircleButton extends StatelessWidget {
                 width: 10,
                 height: 10,
                 decoration: BoxDecoration(
-                  color: NeoColors.alert,
+                  color: NeoColors.alertFill,
                   shape: BoxShape.circle,
-                  border: Border.all(color: NeoColors.surface, width: 1.5),
                 ),
               ),
             ),
@@ -135,14 +142,14 @@ class NeoCircleButton extends StatelessWidget {
   }
 }
 
-/// A chunky pill button — used for CTAs like "SEND OTP" and "LOGOUT".
+/// A chunky pill CTA — "SEND OTP", "LOGOUT", "WATCH LIVE".
 class NeoPillButton extends StatelessWidget {
   const NeoPillButton({
     super.key,
     required this.label,
     required this.onTap,
-    this.foreground = NeoColors.onCharcoal,
-    this.background = NeoColors.charcoal,
+    this.foreground,
+    this.background,
     this.icon,
     this.loading = false,
     this.expand = true,
@@ -150,83 +157,90 @@ class NeoPillButton extends StatelessWidget {
 
   final String label;
   final VoidCallback? onTap;
-  final Color foreground;
-  final Color background;
+
+  /// Both default to the charcoal-on-light CTA pair of the active palette.
+  final Color? foreground;
+  final Color? background;
   final IconData? icon;
   final bool loading;
   final bool expand;
 
   @override
   Widget build(BuildContext context) {
-    final child = Container(
-      width: expand ? double.infinity : null,
-      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
-      decoration: BoxDecoration(
+    final foreground = this.foreground ?? NeoColors.onCharcoal;
+    final background = this.background ?? NeoColors.charcoal;
+    return NeumorphicButton(
+      onPressed: loading ? null : onTap,
+      minDistance: NeoDepth.pressed,
+      style: NeoTheme.raisedStyle(
+        radius: NeoRadii.pill,
+        depth: NeoDepth.button,
         color: background,
-        borderRadius: BorderRadius.circular(NeoRadii.pill),
-        boxShadow: NeoShadows.raisedSmall(),
       ),
-      child: loading
-          ? SizedBox(
-              height: 20,
-              width: 20,
-              child: CircularProgressIndicator(
-                strokeWidth: 2.2,
-                valueColor: AlwaysStoppedAnimation(foreground),
-              ),
-            )
-          : Row(
-              mainAxisSize: expand ? MainAxisSize.max : MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                if (icon != null) ...[
-                  Icon(icon, color: foreground, size: 18),
-                  const SizedBox(width: 8),
-                ],
-                Text(
-                  label,
-                  style: TextStyle(
-                    color: foreground,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 15,
-                    letterSpacing: 0.4,
+      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+      child: SizedBox(
+        width: expand ? double.infinity : null,
+        child: loading
+            ? Center(
+                child: SizedBox(
+                  height: 20,
+                  width: 20,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2.2,
+                    valueColor: AlwaysStoppedAnimation(foreground),
                   ),
                 ),
-              ],
-            ),
-    );
-
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(NeoRadii.pill),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(onTap: loading ? null : onTap, child: child),
+              )
+            : Row(
+                mainAxisSize: expand ? MainAxisSize.max : MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  if (icon != null) ...[
+                    Icon(icon, color: foreground, size: 18),
+                    const SizedBox(width: 8),
+                  ],
+                  Text(
+                    label,
+                    style: TextStyle(
+                      color: foreground,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 15,
+                      letterSpacing: 0.4,
+                    ),
+                  ),
+                ],
+              ),
       ),
     );
   }
 }
 
-/// Small status pill, e.g. "● LIVE (Q3 08:42)" or "FINAL".
+/// Small status pill, e.g. "● LIVE" or "FINAL".
+///
+/// [color] carries the *text*, so it must clear 4.5:1 on the base; [dotColor]
+/// is decorative and may be the brighter sibling tone.
 class StatusCapsule extends StatelessWidget {
   const StatusCapsule({
     super.key,
     required this.label,
-    this.color = NeoColors.live,
+    this.color,
+    this.dotColor,
     this.dot = true,
   });
 
   final String label;
-  final Color color;
+
+  /// Defaults to the palette's live-status ink.
+  final Color? color;
+  final Color? dotColor;
   final bool dot;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    final color = this.color ?? NeoColors.liveInk;
+    return Neumorphic(
+      style: NeoTheme.insetStyle(radius: NeoRadii.pill, depth: -2),
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.14),
-        borderRadius: BorderRadius.circular(NeoRadii.pill),
-      ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -234,7 +248,10 @@ class StatusCapsule extends StatelessWidget {
             Container(
               width: 7,
               height: 7,
-              decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+              decoration: BoxDecoration(
+                color: dotColor ?? color,
+                shape: BoxShape.circle,
+              ),
             ),
             const SizedBox(width: 6),
           ],

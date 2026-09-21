@@ -37,9 +37,13 @@ class ArenaGalleryBento extends StatelessWidget {
             flex: 3,
             child: Column(
               children: [
-                Expanded(child: _BentoFrame(url: second, onTap: onOpenGallery)),
+                Expanded(
+                  child: _BentoFrame(url: second, onTap: onOpenGallery),
+                ),
                 const SizedBox(height: 4),
-                Expanded(child: _BentoFrame(url: third, onTap: onOpenGallery)),
+                Expanded(
+                  child: _BentoFrame(url: third, onTap: onOpenGallery),
+                ),
               ],
             ),
           ),
@@ -87,9 +91,19 @@ class _BentoFrame extends StatelessWidget {
                 left: 6,
                 bottom: 6,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 3,
+                  ),
                   color: ArenaColors.canvas.withValues(alpha: 0.85),
-                  child: Text(tag!, style: ArenaText.label(size: 8.5, color: ArenaColors.textPrimary, tracking: 0.6)),
+                  child: Text(
+                    tag!,
+                    style: ArenaText.label(
+                      size: 8.5,
+                      color: ArenaColors.textPrimary,
+                      tracking: 0.6,
+                    ),
+                  ),
                 ),
               ),
           ],

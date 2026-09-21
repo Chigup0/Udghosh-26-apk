@@ -173,7 +173,12 @@ class NoticeCard extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: const Color.fromARGB(255, 45, 48, 200).withValues(alpha: 0.2),
+            color: const Color.fromARGB(
+              255,
+              45,
+              48,
+              200,
+            ).withValues(alpha: 0.2),
             blurRadius: 10,
             spreadRadius: 2,
           ),
@@ -229,7 +234,9 @@ class NoticeCard extends StatelessWidget {
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  _formatDate(notice.createdAt),
+                  notice.createdAt == null
+                      ? ''
+                      : _formatDate(notice.createdAt!),
                   style: TextStyle(
                     fontFamily: globalFontFamily,
                     fontSize: 12,

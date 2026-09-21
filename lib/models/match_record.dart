@@ -16,16 +16,41 @@ class MatchRecord {
   factory MatchRecord.fromJson(String sport, Map<String, dynamic> json) =>
       MatchRecord(sport, json);
 
-  int get matchId => (json['matchId'] ?? json['id'] ?? -1) as int;
+  int get matchId => int.tryParse('${json['matchId'] ?? json['id']}') ?? -1;
 
-  String get team1 =>
-      (json['team1'] ?? json['player1'] ?? 'Team 1').toString();
-  String get team2 =>
-      (json['team2'] ?? json['player2'] ?? 'Team 2').toString();
+  /// Side 1 / side 2 display names. The live and completed feeds use
+  /// `player1`/`player2` for the individual sports (badminton, squash,
+  /// taekwondo, chess) while `/matches` always sends `team1`/`team2`.
+  String get team1 => (json['team1'] ?? json['player1'] ?? 'Team 1').toString();
+  String get team2 => (json['team2'] ?? json['player2'] ?? 'Team 2').toString();
 
   String get venue => (json['venue'] ?? '').toString();
   String get status => (json['status'] ?? '').toString().toLowerCase();
-  int get winner => int.tryParse('${json['winner'] ?? 0}') ?? 0;
+
+  /// Category label such as "Men" / "Women", or empty when unset.
+  String get category => (json['category'] ?? '').toString();
+
+  /// Stream link, or null while there is no broadcast for this match.
+  String? get liveStreamUrl => _url('liveStreamUrl');
+
+  /// Map link for the venue, or null.
+  String? get locationUrl => _url('locationUrl');
+
+  String? _url(String key) {
+    final raw = json[key]?.toString().trim();
+    if (raw == null || raw.isEmpty || raw == 'null') return null;
+    if (!raw.startsWith('http')) return null;
+    return raw;
+  }
+
+  /// `null` while the match is live, then `1` / `2` for the winning side and
+  /// `0` for a draw. Kept nullable so "no result yet" and "drawn" stay
+  /// distinguishable.
+  int? get winner {
+    final raw = json['winner'];
+    if (raw == null) return null;
+    return int.tryParse('$raw');
+  }
 
   String get sportLabel => AppConfig.sportLabel(sport);
 
@@ -66,6 +91,7 @@ class MatchRecord {
   String get scoreLine {
     switch (sport) {
       case 'cricket':
+        // Overs arrive as strings, e.g. "12.3".
         final overs = _str('team1_overs');
         return '${_int('team1_score')}/${_int('team1_wickets')}'
             '${overs.isNotEmpty ? ' ($overs ov)' : ''}';
@@ -81,7 +107,11 @@ class MatchRecord {
       case 'taekwondo':
         return '${_int('player1_points')} - ${_int('player2_points')}';
       case 'chess':
-        return winner == 1 ? '1 - 0' : (winner == 2 ? '0 - 1' : '½ - ½');
+        // The backend owns the notation ("1-0", "½-½"); fall back to the
+        // running point tally while `result` is still unset.
+        final result = _str('result').trim();
+        if (result.isNotEmpty) return result;
+        return '${_int('team1_points')} - ${_int('team2_points')}';
       default:
         if (AppConfig.setScoredSports.contains(sport)) {
           return setScores.map((s) => '${s.$1}-${s.$2}').join('  ');
@@ -102,6 +132,7 @@ class MatchRecord {
   }
 
   /// Non-zero, non-null per-set scores for racquet sports, in order.
+  /// Sets that were never played come back as 0/null and are hidden.
   List<(int, int)> get setScores {
     final sets = <(int, int)>[];
     for (var i = 1; i <= 5; i++) {
@@ -116,10 +147,18 @@ class MatchRecord {
     return sets;
   }
 
+  /// Result caption for a finished match. Empty while the match has no
+  /// outcome yet, so a live card never claims a draw.
   String get resultLabel {
-    if (winner == 1) return '$team1 won';
-    if (winner == 2) return '$team2 won';
-    if (status == 'completed' || status == 'complete') return 'Drawn';
-    return '';
+    switch (winner) {
+      case 1:
+        return '$team1 won';
+      case 2:
+        return '$team2 won';
+      case 0:
+        return 'Draw';
+      default:
+        return '';
+    }
   }
 }

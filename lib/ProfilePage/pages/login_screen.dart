@@ -18,8 +18,10 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
-  final List<TextEditingController> _otpControllers =
-      List.generate(6, (_) => TextEditingController());
+  final List<TextEditingController> _otpControllers = List.generate(
+    6,
+    (_) => TextEditingController(),
+  );
   final List<FocusNode> _otpFocus = List.generate(6, (_) => FocusNode());
 
   bool _otpSent = false;
@@ -131,7 +133,7 @@ class _LoginScreenState extends State<LoginScreen> {
             textAlign: TextAlign.center,
             keyboardType: TextInputType.number,
             maxLength: 1,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w800,
               color: NeoColors.logoTeal,
@@ -179,7 +181,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   child: Image.asset(
                     'assets/logo/logo.png',
-                    errorBuilder: (_, __, ___) => const Icon(
+                    errorBuilder: (_, __, ___) => Icon(
                       Icons.emoji_events_outlined,
                       size: 40,
                       color: NeoColors.logoTeal,
@@ -191,7 +193,7 @@ class _LoginScreenState extends State<LoginScreen> {
               Text(
                 _otpSent ? 'Verify your code' : 'Welcome back',
                 textAlign: TextAlign.center,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.w800,
                   color: NeoColors.logoTeal,
@@ -211,7 +213,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: TextField(
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: NeoColors.logoTeal,
                       fontWeight: FontWeight.w600,
                     ),
@@ -253,10 +255,10 @@ class _LoginScreenState extends State<LoginScreen> {
                         )
                       : TextButton(
                           onPressed: _loading ? null : _sendOtp,
-                          child: const Text(
+                          child: Text(
                             'Resend code',
                             style: TextStyle(
-                              color: NeoColors.waveTeal,
+                              color: NeoColors.waveInk,
                               fontWeight: FontWeight.w700,
                             ),
                           ),
@@ -296,7 +298,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: Text(
                     _error!,
                     textAlign: TextAlign.center,
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: NeoColors.alert,
                       fontWeight: FontWeight.w600,
                       fontSize: 13,

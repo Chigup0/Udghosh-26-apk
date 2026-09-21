@@ -266,7 +266,7 @@ class _EventsCarouselPortraitState extends State<EventsCarouselPortrait> {
                     //             ),
 
                     //             SizedBox(height: 6),
-                                
+
                     //             Row(
                     //               children: [
                     //                 Icon(

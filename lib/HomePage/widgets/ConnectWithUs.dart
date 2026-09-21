@@ -12,7 +12,10 @@ class ConnectWithUs extends StatelessWidget {
       decoration: BoxDecoration(
         color: Color(0xFF1E3A8A).withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Color(0xFF1E3A8A).withValues(alpha: 0.1), width: 1),
+        border: Border.all(
+          color: Color(0xFF1E3A8A).withValues(alpha: 0.1),
+          width: 1,
+        ),
       ),
       child: Column(
         children: [

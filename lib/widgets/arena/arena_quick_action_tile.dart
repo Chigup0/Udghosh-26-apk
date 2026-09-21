@@ -35,7 +35,11 @@ class ArenaQuickActionTile extends StatelessWidget {
                 label,
                 textAlign: TextAlign.center,
                 maxLines: 2,
-                style: ArenaText.label(size: 9.5, color: ArenaColors.textSecondary, tracking: 0.5),
+                style: ArenaText.label(
+                  size: 9.5,
+                  color: ArenaColors.textSecondary,
+                  tracking: 0.5,
+                ),
               ),
             ],
           ),

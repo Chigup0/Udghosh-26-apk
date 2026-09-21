@@ -32,7 +32,7 @@ class CompletedMatchCard extends StatelessWidget {
         team1 = match.player1!.toUpperCase();
         team2 = match.player2!.toUpperCase();
     }
-print(match.winner);
+    print(match.winner);
     return InkWell(
       onTap: () {
         Navigator.push(
@@ -96,7 +96,12 @@ print(match.winner);
                                       ),
                                       SizedBox(width: 4),
                                       customText(
-                                        match.winner != 0 ? (match.winner == 1 ? team1 : team2).split(" ")[0] : 'Tie',
+                                        match.winner != 0
+                                            ? (match.winner == 1
+                                                      ? team1
+                                                      : team2)
+                                                  .split(" ")[0]
+                                            : 'Tie',
                                         12,
                                         FontWeight.w600,
                                         Colors.green.shade700,

@@ -37,26 +37,47 @@ class _ArenaBroadcastTickerState extends State<ArenaBroadcastTicker> {
     if (widget.alerts.isEmpty) return const SizedBox.shrink();
     return Container(
       color: ArenaColors.live,
-      padding: const EdgeInsets.symmetric(horizontal: ArenaSpace.sm, vertical: 8),
+      padding: const EdgeInsets.symmetric(
+        horizontal: ArenaSpace.sm,
+        vertical: 8,
+      ),
       child: Row(
         children: [
-          Text('ALERT', style: ArenaText.label(size: 10, color: Colors.black, tracking: 1.2)),
+          Text(
+            'ALERT',
+            style: ArenaText.label(
+              size: 10,
+              color: Colors.black,
+              tracking: 1.2,
+            ),
+          ),
           const SizedBox(width: 10),
-          Container(width: 1, height: 12, color: Colors.black.withValues(alpha: 0.4)),
+          Container(
+            width: 1,
+            height: 12,
+            color: Colors.black.withValues(alpha: 0.4),
+          ),
           const SizedBox(width: 10),
           Expanded(
             child: ClipRect(
               child: AnimatedSwitcher(
                 duration: const Duration(milliseconds: 350),
                 transitionBuilder: (child, anim) => SlideTransition(
-                  position: Tween(begin: const Offset(0, 0.6), end: Offset.zero).animate(anim),
+                  position: Tween(
+                    begin: const Offset(0, 0.6),
+                    end: Offset.zero,
+                  ).animate(anim),
                   child: FadeTransition(opacity: anim, child: child),
                 ),
                 child: Text(
                   widget.alerts[_index],
                   key: ValueKey(_index),
                   overflow: TextOverflow.ellipsis,
-                  style: ArenaText.body(size: 12, color: Colors.black, weight: FontWeight.w700),
+                  style: ArenaText.body(
+                    size: 12,
+                    color: Colors.black,
+                    weight: FontWeight.w700,
+                  ),
                 ),
               ),
             ),

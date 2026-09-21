@@ -48,7 +48,9 @@ class DemoData {
       'winner': 1,
       'status': 'completed',
       'venue': 'Main Stadium',
-      'date': DateTime.now().subtract(const Duration(days: 1)).toIso8601String(),
+      'date': DateTime.now()
+          .subtract(const Duration(days: 1))
+          .toIso8601String(),
       'time': '16:00:00',
     });
   }

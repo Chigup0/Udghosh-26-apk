@@ -27,7 +27,9 @@ class AuthController extends ChangeNotifier {
   int? get id => _id;
 
   String get initials {
-    final source = (_name?.trim().isNotEmpty ?? false) ? _name! : (_email ?? '?');
+    final source = (_name?.trim().isNotEmpty ?? false)
+        ? _name!
+        : (_email ?? '?');
     return source.isEmpty ? '?' : source.substring(0, 1).toUpperCase();
   }
 

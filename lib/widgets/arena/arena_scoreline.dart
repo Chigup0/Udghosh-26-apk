@@ -59,7 +59,8 @@ List<String> resolveSetMicroStats(LiveNowMatchModel m) {
   ];
   return [
     for (final s in sets)
-      if ((int.tryParse(s[0]) ?? 0) + (int.tryParse(s[1]) ?? 0) > 0) '${s[0]}-${s[1]}',
+      if ((int.tryParse(s[0]) ?? 0) + (int.tryParse(s[1]) ?? 0) > 0)
+        '${s[0]}-${s[1]}',
   ];
 }
 
@@ -74,8 +75,8 @@ ArenaScoreline resolveScoreline(LiveNowMatchModel m) {
         momentum: m.active == '1'
             ? 1
             : m.active == '2'
-                ? 2
-                : 0,
+            ? 2
+            : 0,
       );
     case 'basketball':
       return ArenaScoreline(

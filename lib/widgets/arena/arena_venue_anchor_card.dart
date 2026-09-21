@@ -6,7 +6,11 @@ class ArenaVenueBlock {
   final String name;
   final int activeMatches;
   final Rect plan;
-  const ArenaVenueBlock({required this.name, required this.activeMatches, required this.plan});
+  const ArenaVenueBlock({
+    required this.name,
+    required this.activeMatches,
+    required this.plan,
+  });
 }
 
 /// Interactive campus venue anchor — a schematic architectural preview
@@ -16,7 +20,11 @@ class ArenaVenueAnchorCard extends StatelessWidget {
   final List<ArenaVenueBlock> venues;
   final VoidCallback onExpand;
 
-  const ArenaVenueAnchorCard({super.key, required this.venues, required this.onExpand});
+  const ArenaVenueAnchorCard({
+    super.key,
+    required this.venues,
+    required this.onExpand,
+  });
 
   int get _totalMatches => venues.fold(0, (sum, v) => sum + v.activeMatches);
 
@@ -32,7 +40,11 @@ class ArenaVenueAnchorCard extends StatelessWidget {
             children: [
               Text('CAMPUS GRID', style: ArenaText.heading(size: 14)),
               const Spacer(),
-              const Icon(Icons.radio_button_checked, size: 10, color: ArenaColors.live),
+              const Icon(
+                Icons.radio_button_checked,
+                size: 10,
+                color: ArenaColors.live,
+              ),
               const SizedBox(width: 6),
               Text(
                 '$_totalMatches MATCHES // ${venues.length} VENUES',
@@ -63,10 +75,18 @@ class ArenaVenueAnchorCard extends StatelessWidget {
                     Container(
                       width: 6,
                       height: 6,
-                      color: v.activeMatches > 0 ? ArenaColors.live : ArenaColors.textDim,
+                      color: v.activeMatches > 0
+                          ? ArenaColors.live
+                          : ArenaColors.textDim,
                     ),
                     const SizedBox(width: 6),
-                    Text(v.name.toUpperCase(), style: ArenaText.label(size: 9.5, color: ArenaColors.textSecondary)),
+                    Text(
+                      v.name.toUpperCase(),
+                      style: ArenaText.label(
+                        size: 9.5,
+                        color: ArenaColors.textSecondary,
+                      ),
+                    ),
                   ],
                 ),
             ],
@@ -78,10 +98,16 @@ class ArenaVenueAnchorCard extends StatelessWidget {
               width: double.infinity,
               alignment: Alignment.center,
               padding: const EdgeInsets.symmetric(vertical: 11),
-              decoration: BoxDecoration(border: Border.all(color: ArenaColors.borderStrong, width: 1)),
+              decoration: BoxDecoration(
+                border: Border.all(color: ArenaColors.borderStrong, width: 1),
+              ),
               child: Text(
                 '[ EXPAND INTERACTIVE FEST MAP ]',
-                style: ArenaText.label(size: 10.5, color: ArenaColors.textPrimary, tracking: 0.8),
+                style: ArenaText.label(
+                  size: 10.5,
+                  color: ArenaColors.textPrimary,
+                  tracking: 0.8,
+                ),
               ),
             ),
           ),
@@ -119,7 +145,9 @@ class _CampusPlanPainter extends CustomPainter {
       final active = v.activeMatches > 0;
       canvas.drawRect(
         rect,
-        Paint()..color = (active ? ArenaColors.live : ArenaColors.textDim).withValues(alpha: 0.12),
+        Paint()
+          ..color = (active ? ArenaColors.live : ArenaColors.textDim)
+              .withValues(alpha: 0.12),
       );
       canvas.drawRect(
         rect,
@@ -135,5 +163,6 @@ class _CampusPlanPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant _CampusPlanPainter oldDelegate) => oldDelegate.venues != venues;
+  bool shouldRepaint(covariant _CampusPlanPainter oldDelegate) =>
+      oldDelegate.venues != venues;
 }

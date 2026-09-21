@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+import 'package:flutter_neumorphic_plus/flutter_neumorphic.dart';
+import 'package:hugeicons/hugeicons.dart';
 import 'package:udghosh/theme/neo_theme.dart';
 import 'package:udghosh/services/auth_provider.dart';
 import 'neo_container.dart';
@@ -29,20 +30,14 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
         child: Row(
           children: [
-            Container(
-              width: 48,
-              height: 48,
+            Neumorphic(
+              style: NeoTheme.circleStyle(),
               padding: const EdgeInsets.all(6),
-              decoration: BoxDecoration(
-                color: NeoColors.surface,
-                shape: BoxShape.circle,
-                boxShadow: NeoShadows.raisedSmall(),
-              ),
               child: ClipOval(
                 child: Image.asset(
                   'assets/logo/logo.png',
                   fit: BoxFit.contain,
-                  errorBuilder: (_, __, ___) => const Icon(
+                  errorBuilder: (_, __, ___) => Icon(
                     Icons.emoji_events_outlined,
                     color: NeoColors.logoTeal,
                   ),
@@ -70,7 +65,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w700,
-                      color: NeoColors.flameGold.withValues(alpha: 0.95),
+                      color: NeoColors.waveInk,
                       letterSpacing: 0.8,
                     ),
                   ),
@@ -80,8 +75,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             NeoCircleButton(
               onTap: onNotificationTap,
               badge: hasUnread,
-              child: const Icon(
-                Icons.notifications_rounded,
+              child: HugeIcon(
+                icon: HugeIcons.strokeRoundedNotification01,
                 size: 20,
                 color: NeoColors.logoTeal,
               ),
@@ -96,15 +91,15 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                   if (auth.isLoggedIn) {
                     return Text(
                       auth.initials,
-                      style: const TextStyle(
-                        color: NeoColors.waveTeal,
+                      style: TextStyle(
+                        color: NeoColors.waveInk,
                         fontWeight: FontWeight.w800,
                         fontSize: 14,
                       ),
                     );
                   }
-                  return const Icon(
-                    Icons.person_rounded,
+                  return HugeIcon(
+                    icon: HugeIcons.strokeRoundedUserCircle,
                     size: 20,
                     color: NeoColors.logoTeal,
                   );

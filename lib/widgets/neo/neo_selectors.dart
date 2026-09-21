@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter_neumorphic_plus/flutter_neumorphic.dart';
 import 'package:flutter/services.dart';
 import 'package:udghosh/theme/neo_theme.dart';
 
@@ -17,9 +17,9 @@ class NeoSegmentedControl extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return Neumorphic(
+      style: NeoTheme.insetStyle(radius: NeoRadii.pill),
       padding: const EdgeInsets.all(5),
-      decoration: NeoTheme.inset(radius: NeoRadii.pill),
       child: Row(
         children: List.generate(labels.length, (i) {
           final active = i == index;
@@ -29,21 +29,21 @@ class NeoSegmentedControl extends StatelessWidget {
                 HapticFeedback.selectionClick();
                 onChanged(i);
               },
-              child: AnimatedContainer(
+              child: Neumorphic(
                 duration: const Duration(milliseconds: 200),
-                padding: const EdgeInsets.symmetric(vertical: 10),
-                decoration: BoxDecoration(
-                  color: active ? NeoColors.surface : Colors.transparent,
-                  borderRadius: BorderRadius.circular(NeoRadii.pill),
-                  boxShadow: active ? NeoShadows.raisedSmall() : const [],
+                style: NeoTheme.raisedStyle(
+                  radius: NeoRadii.pill,
+                  depth: active ? NeoDepth.chip : 0,
                 ),
-                alignment: Alignment.center,
-                child: Text(
-                  labels[i],
-                  style: TextStyle(
-                    fontWeight: FontWeight.w800,
-                    fontSize: 13,
-                    color: active ? NeoColors.logoTeal : NeoColors.textMuted,
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                child: Center(
+                  child: Text(
+                    labels[i],
+                    style: TextStyle(
+                      fontWeight: FontWeight.w800,
+                      fontSize: 13,
+                      color: active ? NeoColors.logoTeal : NeoColors.textMuted,
+                    ),
                   ),
                 ),
               ),
@@ -87,25 +87,23 @@ class NeoPillBar extends StatelessWidget {
               HapticFeedback.selectionClick();
               onSelected(i);
             },
-            child: AnimatedContainer(
+            child: Neumorphic(
               duration: const Duration(milliseconds: 200),
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              decoration: BoxDecoration(
-                color: active ? NeoColors.charcoal : NeoColors.surface,
-                borderRadius: BorderRadius.circular(NeoRadii.pill),
-                boxShadow: active ? const [] : NeoShadows.raisedSmall(),
+              style: NeoTheme.raisedStyle(
+                radius: NeoRadii.pill,
+                depth: active ? NeoDepth.pressed : NeoDepth.chip,
+                color: active ? NeoColors.charcoal : null,
               ),
-              alignment: Alignment.center,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   if (icon != null) ...[
                     Icon(
                       icon,
                       size: 15,
-                      color: active
-                          ? NeoColors.onCharcoal
-                          : NeoColors.logoTeal,
+                      color: active ? NeoColors.onCharcoal : NeoColors.logoTeal,
                     ),
                     const SizedBox(width: 6),
                   ],

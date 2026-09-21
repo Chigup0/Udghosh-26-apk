@@ -16,25 +16,25 @@ class ParticipantModel {
     required this.sport,
     required this.team,
     required this.id_generation,
-    required this.hall_name
+    required this.hall_name,
   });
 
   factory ParticipantModel.fromJson(Map<String, dynamic> json) {
-    String email = (json['email']??"");
-    String team = json['team']??"";
+    String email = (json['email'] ?? "");
+    String team = json['team'] ?? "";
     String collegeFolder = team.split(" ")[1].toLowerCase();
-    String qrUrl = "https://firebasestorage.googleapis.com/v0/b/udghosh2024.appspot.com/o/QR%2F$collegeFolder%2F${email}_qrcode.png?alt=media";
-
+    String qrUrl =
+        "https://firebasestorage.googleapis.com/v0/b/udghosh2024.appspot.com/o/QR%2F$collegeFolder%2F${email}_qrcode.png?alt=media";
 
     return ParticipantModel(
-      id: (json['id']??0).toString(),
-      name: json['name']??"",
-      email: json['email']??"",
-      gender: json['gender']??"",
-      sport: json['sport']??"",
-      team: json['team']??"",
+      id: (json['id'] ?? 0).toString(),
+      name: json['name'] ?? "",
+      email: json['email'] ?? "",
+      gender: json['gender'] ?? "",
+      sport: json['sport'] ?? "",
+      team: json['team'] ?? "",
       id_generation: qrUrl,
-      hall_name: (json['hall_name']??0).toString()
+      hall_name: (json['hall_name'] ?? 0).toString(),
     );
   }
 }

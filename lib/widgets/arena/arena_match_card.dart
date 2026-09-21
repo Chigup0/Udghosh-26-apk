@@ -55,7 +55,11 @@ class _HeaderStrip extends StatelessWidget {
           child: Text(
             stageText,
             overflow: TextOverflow.ellipsis,
-            style: ArenaText.label(size: 9.5, color: ArenaColors.textDim, tracking: 0.6),
+            style: ArenaText.label(
+              size: 9.5,
+              color: ArenaColors.textDim,
+              tracking: 0.6,
+            ),
           ),
         ),
         const SizedBox(width: ArenaSpace.xs),
@@ -114,14 +118,20 @@ class _TeamBlock extends StatelessWidget {
   final String name;
   final bool alignEnd;
   final bool momentum;
-  const _TeamBlock({required this.name, required this.alignEnd, required this.momentum});
+  const _TeamBlock({
+    required this.name,
+    required this.alignEnd,
+    required this.momentum,
+  });
 
   String get _code {
     final letters = name.replaceAll(RegExp(r'[^A-Z0-9 ]'), '').trim();
     if (letters.isEmpty) return '--';
     final words = letters.split(RegExp(r'\s+'));
     if (words.length == 1) {
-      return words.first.length <= 4 ? words.first : words.first.substring(0, 4);
+      return words.first.length <= 4
+          ? words.first
+          : words.first.substring(0, 4);
     }
     final initials = words.map((w) => w.isNotEmpty ? w[0] : '').join();
     return initials.length <= 4 ? initials : initials.substring(0, 4);
@@ -138,7 +148,10 @@ class _TeamBlock extends StatelessWidget {
       child: SizedBox(
         width: 44,
         child: Center(
-          child: Text(_code, style: ArenaText.mono(size: 13, color: ArenaColors.textPrimary)),
+          child: Text(
+            _code,
+            style: ArenaText.mono(size: 13, color: ArenaColors.textPrimary),
+          ),
         ),
       ),
     );
@@ -148,7 +161,11 @@ class _TeamBlock extends StatelessWidget {
       maxLines: 2,
       overflow: TextOverflow.ellipsis,
       textAlign: alignEnd ? TextAlign.end : TextAlign.start,
-      style: ArenaText.body(size: 11, color: ArenaColors.textSecondary, weight: FontWeight.w700),
+      style: ArenaText.body(
+        size: 11,
+        color: ArenaColors.textSecondary,
+        weight: FontWeight.w700,
+      ),
     );
 
     final momentumBar = AnimatedContainer(
@@ -160,7 +177,9 @@ class _TeamBlock extends StatelessWidget {
     );
 
     return Column(
-      crossAxisAlignment: alignEnd ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+      crossAxisAlignment: alignEnd
+          ? CrossAxisAlignment.end
+          : CrossAxisAlignment.start,
       children: [badge, const SizedBox(height: 4), label, momentumBar],
     );
   }
@@ -188,7 +207,13 @@ class _ScoreboardCutout extends StatelessWidget {
           ? Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(data.scheduledTime ?? '--:--', style: ArenaText.mono(size: 20, color: ArenaColors.textPrimary)),
+                Text(
+                  data.scheduledTime ?? '--:--',
+                  style: ArenaText.mono(
+                    size: 20,
+                    color: ArenaColors.textPrimary,
+                  ),
+                ),
                 const SizedBox(height: 2),
                 Text('IST', style: ArenaText.label(size: 9, tracking: 1.2)),
               ],
@@ -200,22 +225,47 @@ class _ScoreboardCutout extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Text(scoreline.left, style: ArenaText.mono(size: 22, color: ArenaColors.textPrimary)),
+                    Text(
+                      scoreline.left,
+                      style: ArenaText.mono(
+                        size: 22,
+                        color: ArenaColors.textPrimary,
+                      ),
+                    ),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 4),
-                      child: Text(':', style: ArenaText.mono(size: 18, color: ArenaColors.textDim)),
+                      child: Text(
+                        ':',
+                        style: ArenaText.mono(
+                          size: 18,
+                          color: ArenaColors.textDim,
+                        ),
+                      ),
                     ),
-                    Text(scoreline.right, style: ArenaText.mono(size: 22, color: ArenaColors.textPrimary)),
+                    Text(
+                      scoreline.right,
+                      style: ArenaText.mono(
+                        size: 22,
+                        color: ArenaColors.textPrimary,
+                      ),
+                    ),
                   ],
                 ),
-                if (scoreline.leftSub != null || scoreline.rightSub != null) ...[
+                if (scoreline.leftSub != null ||
+                    scoreline.rightSub != null) ...[
                   const SizedBox(height: 3),
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(scoreline.leftSub ?? '', style: ArenaText.label(size: 8.5, tracking: 0.4)),
+                      Text(
+                        scoreline.leftSub ?? '',
+                        style: ArenaText.label(size: 8.5, tracking: 0.4),
+                      ),
                       const SizedBox(width: 10),
-                      Text(scoreline.rightSub ?? '', style: ArenaText.label(size: 8.5, tracking: 0.4)),
+                      Text(
+                        scoreline.rightSub ?? '',
+                        style: ArenaText.label(size: 8.5, tracking: 0.4),
+                      ),
                     ],
                   ),
                 ],
@@ -236,13 +286,22 @@ class _FooterStrip extends StatelessWidget {
       children: [
         Row(
           children: [
-            const Icon(Icons.location_on_outlined, size: 13, color: ArenaColors.textSecondary),
+            const Icon(
+              Icons.location_on_outlined,
+              size: 13,
+              color: ArenaColors.textSecondary,
+            ),
             const SizedBox(width: 4),
             Expanded(
               child: Text(
-                data.venueTag != null ? '${data.venue.toUpperCase()} // ${data.venueTag}' : data.venue.toUpperCase(),
+                data.venueTag != null
+                    ? '${data.venue.toUpperCase()} // ${data.venueTag}'
+                    : data.venue.toUpperCase(),
                 overflow: TextOverflow.ellipsis,
-                style: ArenaText.label(size: 10, color: ArenaColors.textSecondary),
+                style: ArenaText.label(
+                  size: 10,
+                  color: ArenaColors.textSecondary,
+                ),
               ),
             ),
             const SizedBox(width: ArenaSpace.xs),
@@ -250,11 +309,23 @@ class _FooterStrip extends StatelessWidget {
               GestureDetector(
                 onTap: data.onAction,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                  decoration: BoxDecoration(border: Border.all(color: ArenaColors.borderStrong, width: 1)),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: ArenaColors.borderStrong,
+                      width: 1,
+                    ),
+                  ),
                   child: Text(
                     '[ ${data.actionLabel} ]',
-                    style: ArenaText.label(size: 9.5, color: ArenaColors.textPrimary, tracking: 0.8),
+                    style: ArenaText.label(
+                      size: 9.5,
+                      color: ArenaColors.textPrimary,
+                      tracking: 0.8,
+                    ),
                   ),
                 ),
               ),
@@ -268,9 +339,18 @@ class _FooterStrip extends StatelessWidget {
             children: [
               for (final s in data.microStats)
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 2,
+                  ),
                   color: ArenaColors.surfaceRecessed,
-                  child: Text(s, style: ArenaText.mono(size: 10, color: ArenaColors.textSecondary)),
+                  child: Text(
+                    s,
+                    style: ArenaText.mono(
+                      size: 10,
+                      color: ArenaColors.textSecondary,
+                    ),
+                  ),
                 ),
             ],
           ),
@@ -279,7 +359,11 @@ class _FooterStrip extends StatelessWidget {
           const SizedBox(height: 6),
           Text(
             'DELAYED ${data.delayMinutes.toStringAsFixed(0)} MIN',
-            style: ArenaText.label(size: 9.5, color: ArenaColors.live, tracking: 0.6),
+            style: ArenaText.label(
+              size: 9.5,
+              color: ArenaColors.live,
+              tracking: 0.6,
+            ),
           ),
         ],
       ],

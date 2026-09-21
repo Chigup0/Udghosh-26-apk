@@ -292,7 +292,9 @@ class _InformalCarouselPortraitState extends State<InformalCarouselPortrait> {
                                   child: Text(
                                     event.venue,
                                     style: TextStyle(
-                                      color: Colors.white.withValues(alpha: 0.9),
+                                      color: Colors.white.withValues(
+                                        alpha: 0.9,
+                                      ),
                                       fontSize: 13,
                                       fontWeight: FontWeight.w400,
                                       fontFamily: globalFontFamily,

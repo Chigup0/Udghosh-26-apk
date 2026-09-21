@@ -91,7 +91,9 @@ class TeamsPage extends StatelessWidget {
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFF2979FF).withValues(alpha: 0.4), // neon glow
+                color: const Color(
+                  0xFF2979FF,
+                ).withValues(alpha: 0.4), // neon glow
                 blurRadius: 12,
                 spreadRadius: 1,
                 offset: const Offset(0, 4),

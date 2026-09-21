@@ -48,15 +48,25 @@ class ArenaHomeScreen extends StatefulWidget {
   State<ArenaHomeScreen> createState() => _ArenaHomeScreenState();
 }
 
-const _sportFilters = ['ALL', 'CRICKET', 'FOOTBALL', 'BASKETBALL', 'BADMINTON', 'TRACK & FIELD'];
+const _sportFilters = [
+  'ALL',
+  'CRICKET',
+  'FOOTBALL',
+  'BASKETBALL',
+  'BADMINTON',
+  'TRACK & FIELD',
+];
 
 class _ArenaHomeScreenState extends State<ArenaHomeScreen> {
   int _filterIndex = 0;
 
-  late final List<LiveNowMatchModel> _liveMatches = widget.liveMatches ?? _sampleLiveMatches();
-  late final List<UpcomingMatchesModel> _upcomingMatches = widget.upcomingMatches ?? _sampleUpcomingMatches();
+  late final List<LiveNowMatchModel> _liveMatches =
+      widget.liveMatches ?? _sampleLiveMatches();
+  late final List<UpcomingMatchesModel> _upcomingMatches =
+      widget.upcomingMatches ?? _sampleUpcomingMatches();
 
-  void _comingSoon(String feature) => Fluttertoast.showToast(msg: '$feature — coming soon');
+  void _comingSoon(String feature) =>
+      Fluttertoast.showToast(msg: '$feature — coming soon');
 
   @override
   Widget build(BuildContext context) {
@@ -64,8 +74,12 @@ class _ArenaHomeScreenState extends State<ArenaHomeScreen> {
     final feed = _filterIndex == 0
         ? _liveMatches
         : _liveMatches
-            .where((m) => (m.sport ?? '').toUpperCase() == _sportFilters[_filterIndex])
-            .toList();
+              .where(
+                (m) =>
+                    (m.sport ?? '').toUpperCase() ==
+                    _sportFilters[_filterIndex],
+              )
+              .toList();
 
     return Scaffold(
       backgroundColor: ArenaColors.canvas,
@@ -82,7 +96,9 @@ class _ArenaHomeScreenState extends State<ArenaHomeScreen> {
               const SizedBox(height: ArenaSpace.sm),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: ArenaSpace.sm),
-                child: _SectionEyebrow(text: 'THE APEX TRIAL // HIGHEST STAKES LIVE'),
+                child: _SectionEyebrow(
+                  text: 'THE APEX TRIAL // HIGHEST STAKES LIVE',
+                ),
               ),
               const SizedBox(height: ArenaSpace.xs),
               Padding(
@@ -108,7 +124,10 @@ class _ArenaHomeScreenState extends State<ArenaHomeScreen> {
                   ArenaQuickActionTile(
                     icon: Icons.map_outlined,
                     label: 'CAMPUS MAP\n/ ARENAS',
-                    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const MapPage())),
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const MapPage()),
+                    ),
                   ),
                   const SizedBox(width: ArenaSpace.xxs),
                   ArenaQuickActionTile(
@@ -132,20 +151,37 @@ class _ArenaHomeScreenState extends State<ArenaHomeScreen> {
               ),
             ),
             const SizedBox(height: ArenaSpace.lg),
-            ArenaBroadcastTicker(alerts: const [
-              'WEATHER ALERT: LAWN TENNIS DELAYED 15 MIN // FOOTBALL SEMI-FINAL RESUMES AT 17:00 ON MAIN OVAL',
-              'VENUE CHANGE: BADMINTON FINALS MOVED TO NEW SAC COURT 2, 16:00 IST',
-            ]),
+            ArenaBroadcastTicker(
+              alerts: const [
+                'WEATHER ALERT: LAWN TENNIS DELAYED 15 MIN // FOOTBALL SEMI-FINAL RESUMES AT 17:00 ON MAIN OVAL',
+                'VENUE CHANGE: BADMINTON FINALS MOVED TO NEW SAC COURT 2, 16:00 IST',
+              ],
+            ),
             const SizedBox(height: ArenaSpace.lg),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: ArenaSpace.sm),
               child: ArenaVenueAnchorCard(
                 venues: const [
-                  ArenaVenueBlock(name: 'Main Stadium', activeMatches: 2, plan: Rect.fromLTWH(0.08, 0.55, 0.34, 0.32)),
-                  ArenaVenueBlock(name: 'Old SAC', activeMatches: 1, plan: Rect.fromLTWH(0.48, 0.15, 0.22, 0.28)),
-                  ArenaVenueBlock(name: 'New SAC Courts', activeMatches: 1, plan: Rect.fromLTWH(0.72, 0.5, 0.22, 0.4)),
+                  ArenaVenueBlock(
+                    name: 'Main Stadium',
+                    activeMatches: 2,
+                    plan: Rect.fromLTWH(0.08, 0.55, 0.34, 0.32),
+                  ),
+                  ArenaVenueBlock(
+                    name: 'Old SAC',
+                    activeMatches: 1,
+                    plan: Rect.fromLTWH(0.48, 0.15, 0.22, 0.28),
+                  ),
+                  ArenaVenueBlock(
+                    name: 'New SAC Courts',
+                    activeMatches: 1,
+                    plan: Rect.fromLTWH(0.72, 0.5, 0.22, 0.4),
+                  ),
                 ],
-                onExpand: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const MapPage())),
+                onExpand: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const MapPage()),
+                ),
               ),
             ),
             const SizedBox(height: ArenaSpace.lg),
@@ -160,7 +196,8 @@ class _ArenaHomeScreenState extends State<ArenaHomeScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: ArenaSpace.sm),
                 scrollDirection: Axis.horizontal,
                 itemCount: _sportFilters.length,
-                separatorBuilder: (_, __) => const SizedBox(width: ArenaSpace.xs),
+                separatorBuilder: (_, __) =>
+                    const SizedBox(width: ArenaSpace.xs),
                 itemBuilder: (context, i) {
                   final selected = i == _filterIndex;
                   return GestureDetector(
@@ -169,15 +206,23 @@ class _ArenaHomeScreenState extends State<ArenaHomeScreen> {
                       alignment: Alignment.center,
                       padding: const EdgeInsets.symmetric(horizontal: 14),
                       decoration: BoxDecoration(
-                        color: selected ? ArenaColors.textPrimary : ArenaColors.surface,
-                        border: Border.all(color: selected ? ArenaColors.textPrimary : ArenaColors.border),
+                        color: selected
+                            ? ArenaColors.textPrimary
+                            : ArenaColors.surface,
+                        border: Border.all(
+                          color: selected
+                              ? ArenaColors.textPrimary
+                              : ArenaColors.border,
+                        ),
                       ),
                       child: Text(
                         _sportFilters[i],
                         style: ArenaText.label(
                           size: 10.5,
                           tracking: 0.6,
-                          color: selected ? ArenaColors.canvas : ArenaColors.textSecondary,
+                          color: selected
+                              ? ArenaColors.canvas
+                              : ArenaColors.textSecondary,
                         ),
                       ),
                     ),
@@ -189,12 +234,20 @@ class _ArenaHomeScreenState extends State<ArenaHomeScreen> {
             if (feed.isEmpty)
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: ArenaSpace.sm),
-                child: Text('NO ONGOING DUELS IN THIS CATEGORY', style: ArenaText.label(size: 11)),
+                child: Text(
+                  'NO ONGOING DUELS IN THIS CATEGORY',
+                  style: ArenaText.label(size: 11),
+                ),
               )
             else
               ...feed.map(
                 (m) => Padding(
-                  padding: const EdgeInsets.fromLTRB(ArenaSpace.sm, 0, ArenaSpace.sm, ArenaSpace.xs),
+                  padding: const EdgeInsets.fromLTRB(
+                    ArenaSpace.sm,
+                    0,
+                    ArenaSpace.sm,
+                    ArenaSpace.xs,
+                  ),
                   child: ArenaMatchCard(
                     data: ArenaMatchData.fromLive(
                       m,
@@ -209,11 +262,17 @@ class _ArenaHomeScreenState extends State<ArenaHomeScreen> {
               const SizedBox(height: ArenaSpace.xs),
               ..._upcomingMatches.map(
                 (m) => Padding(
-                  padding: const EdgeInsets.fromLTRB(ArenaSpace.sm, 0, ArenaSpace.sm, ArenaSpace.xs),
+                  padding: const EdgeInsets.fromLTRB(
+                    ArenaSpace.sm,
+                    0,
+                    ArenaSpace.sm,
+                    ArenaSpace.xs,
+                  ),
                   child: ArenaMatchCard(
                     data: ArenaMatchData.fromUpcoming(
                       m,
-                      onAction: () => _comingSoon('Reminder for match ${m.matchId}'),
+                      onAction: () =>
+                          _comingSoon('Reminder for match ${m.matchId}'),
                     ),
                   ),
                 ),
@@ -244,12 +303,21 @@ class _AppBar extends StatelessWidget {
   final int unread;
   final VoidCallback onBell;
   final VoidCallback onAvatar;
-  const _AppBar({required this.unread, required this.onBell, required this.onAvatar});
+  const _AppBar({
+    required this.unread,
+    required this.onBell,
+    required this.onAvatar,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(ArenaSpace.sm, ArenaSpace.xs, ArenaSpace.sm, ArenaSpace.xs),
+      padding: const EdgeInsets.fromLTRB(
+        ArenaSpace.sm,
+        ArenaSpace.xs,
+        ArenaSpace.sm,
+        ArenaSpace.xs,
+      ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
@@ -258,7 +326,10 @@ class _AppBar extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text("UDGHOSH '26", style: ArenaText.display(size: 30)),
-                Text('EDITION XXII // ASCENSION', style: ArenaText.label(size: 10, tracking: 1.4)),
+                Text(
+                  'EDITION XXII // ASCENSION',
+                  style: ArenaText.label(size: 10, tracking: 1.4),
+                ),
               ],
             ),
           ),
@@ -269,13 +340,20 @@ class _AppBar extends StatelessWidget {
               child: Stack(
                 clipBehavior: Clip.none,
                 children: [
-                  const Icon(Icons.notifications_outlined, color: ArenaColors.textPrimary, size: 24),
+                  const Icon(
+                    Icons.notifications_outlined,
+                    color: ArenaColors.textPrimary,
+                    size: 24,
+                  ),
                   if (unread > 0)
                     Positioned(
                       right: -4,
                       top: -4,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 4,
+                          vertical: 1,
+                        ),
                         color: ArenaColors.live,
                         child: Text(
                           unread > 9 ? '9+' : '$unread',
@@ -329,60 +407,60 @@ class _SectionEyebrow extends StatelessWidget {
 // ---------------------------------------------------------------------
 
 List<LiveNowMatchModel> _sampleLiveMatches() => [
-      LiveNowMatchModel.fromJson({
-        'matchId': 101,
-        'sport': 'basketball',
-        'category': "men's",
-        'team1': 'Hall 5',
-        'team2': 'Hall 9',
-        'team1_score': 42,
-        'team2_score': 38,
-        'venue': 'New SAC Courts',
-        'date': '2026-09-10',
-        'time': '15:30:00',
-        'status': 'live',
-      }),
-      LiveNowMatchModel.fromJson({
-        'matchId': 102,
-        'sport': 'football',
-        'category': "men's",
-        'team1': 'Hall 3',
-        'team2': 'Hall 11',
-        'team1_goals': 1,
-        'team2_goals': 1,
-        'venue': 'Main Ground',
-        'date': '2026-09-10',
-        'time': '16:00:00',
-        'status': 'live',
-      }),
-      LiveNowMatchModel.fromJson({
-        'matchId': 103,
-        'sport': 'badminton',
-        'category': "women's",
-        'player1': 'Hall 6',
-        'player2': 'Hall 10',
-        'active': '2',
-        'set1_score1': 21,
-        'set1_score2': 18,
-        'set2_score1': 19,
-        'set2_score2': 21,
-        'venue': 'Old SAC',
-        'date': '2026-09-10',
-        'time': '16:30:00',
-        'status': 'live',
-      }),
-    ];
+  LiveNowMatchModel.fromJson({
+    'matchId': 101,
+    'sport': 'basketball',
+    'category': "men's",
+    'team1': 'Hall 5',
+    'team2': 'Hall 9',
+    'team1_score': 42,
+    'team2_score': 38,
+    'venue': 'New SAC Courts',
+    'date': '2026-09-10',
+    'time': '15:30:00',
+    'status': 'live',
+  }),
+  LiveNowMatchModel.fromJson({
+    'matchId': 102,
+    'sport': 'football',
+    'category': "men's",
+    'team1': 'Hall 3',
+    'team2': 'Hall 11',
+    'team1_goals': 1,
+    'team2_goals': 1,
+    'venue': 'Main Ground',
+    'date': '2026-09-10',
+    'time': '16:00:00',
+    'status': 'live',
+  }),
+  LiveNowMatchModel.fromJson({
+    'matchId': 103,
+    'sport': 'badminton',
+    'category': "women's",
+    'player1': 'Hall 6',
+    'player2': 'Hall 10',
+    'active': '2',
+    'set1_score1': 21,
+    'set1_score2': 18,
+    'set2_score1': 19,
+    'set2_score2': 21,
+    'venue': 'Old SAC',
+    'date': '2026-09-10',
+    'time': '16:30:00',
+    'status': 'live',
+  }),
+];
 
 List<UpcomingMatchesModel> _sampleUpcomingMatches() => [
-      UpcomingMatchesModel.fromJson({
-        'matchId': 201,
-        'sport': 'Cricket',
-        'category': "Men's",
-        'team1': 'Hall 7',
-        'team2': 'Hall 12',
-        'venue': 'Cricket Ground',
-        'date': '2026-09-10',
-        'time': '18:00:00',
-        'athleteType': '',
-      }),
-    ];
+  UpcomingMatchesModel.fromJson({
+    'matchId': 201,
+    'sport': 'Cricket',
+    'category': "Men's",
+    'team1': 'Hall 7',
+    'team2': 'Hall 12',
+    'venue': 'Cricket Ground',
+    'date': '2026-09-10',
+    'time': '18:00:00',
+    'athleteType': '',
+  }),
+];

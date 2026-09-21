@@ -1,3 +1,5 @@
+import 'package:hugeicons/hugeicons.dart';
+
 /// Central runtime configuration for the Udghosh user app.
 ///
 /// Keeping the base URL, demo-auth bypass credentials and the canonical
@@ -26,6 +28,14 @@ class AppConfig {
   static const String demoUserName = "Demo Athlete";
 
   static const Duration otpResendCooldown = Duration(seconds: 60);
+
+  /// Page size for every paginated match feed. The backend defaults to 10
+  /// and caps at 500; 20 fills a phone screen without over-fetching.
+  static const int defaultPageSize = 20;
+
+  /// Sentinel accepted by `GET /matches` (and only that endpoint) to fetch
+  /// the schedule across every sport.
+  static const String allSports = 'all';
 
   /// Canonical `sportTableName` values the backend understands. Order drives
   /// the sport-selector pill bar on the Matches screen.
@@ -64,8 +74,40 @@ class AppConfig {
     'ultimatefrisbee': 'Ultimate Frisbee',
   };
 
-  static String sportLabel(String table) =>
-      sportLabels[table] ?? table.toUpperCase();
+  /// The backend ignores spaces, hyphens and case in sport names, so
+  /// `Lawn Tennis`, `lawn-tennis` and `lawntennis` all collapse to the
+  /// canonical table name.
+  static String normalizeSport(String raw) =>
+      raw.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]'), '');
+
+  static String sportLabel(String table) {
+    final key = normalizeSport(table);
+    return sportLabels[key] ?? table.toUpperCase();
+  }
+
+  /// Glyph per sport, used wherever a sport needs a mark and no Lottie
+  /// animation has been bundled for it yet. Hugeicons has no cricket, kabaddi,
+  /// kho-kho, squash or taekwondo glyph, so those borrow the closest fit.
+  static const Map<String, List<List<dynamic>>> sportGlyphs = {
+    'cricket': HugeIcons.strokeRoundedBaseballBat,
+    'volleyball': HugeIcons.strokeRoundedVolleyball,
+    'basketball': HugeIcons.strokeRoundedBasketball01,
+    'hockey': HugeIcons.strokeRoundedHockey,
+    'lawntennis': HugeIcons.strokeRoundedTennisBall,
+    'tabletennis': HugeIcons.strokeRoundedBadminton,
+    'badminton': HugeIcons.strokeRoundedBadmintonShuttle,
+    'chess': HugeIcons.strokeRoundedChessPawn,
+    'football': HugeIcons.strokeRoundedFootball,
+    'kabaddi': HugeIcons.strokeRoundedBoxingGlove,
+    'khokho': HugeIcons.strokeRoundedRunningShoes,
+    'squash': HugeIcons.strokeRoundedTennisBall,
+    'taekwondo': HugeIcons.strokeRoundedBoxingGlove,
+    'ultimatefrisbee': HugeIcons.strokeRoundedFrisbee,
+  };
+
+  /// Glyph for [table], falling back to a trophy for anything unrecognised.
+  static List<List<dynamic>> sportGlyph(String table) =>
+      sportGlyphs[normalizeSport(table)] ?? HugeIcons.strokeRoundedChampion;
 
   /// Sports rendered with discrete per-set scores (racquet sports).
   static const Set<String> setScoredSports = {

@@ -94,10 +94,14 @@ class _HomePageState extends State<HomePage> {
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(20),
                                     border: Border.all(
-                                      color: Color(0xFF00F5FF).withValues(alpha: 0.2),
+                                      color: Color(
+                                        0xFF00F5FF,
+                                      ).withValues(alpha: 0.2),
                                       width: 1,
                                     ),
-                                    color: Color(0xFF00F5FF).withValues(alpha: 0.05),
+                                    color: Color(
+                                      0xFF00F5FF,
+                                    ).withValues(alpha: 0.05),
                                   ),
                                   child: Image.asset(
                                     'assets/logo/logo.png',
@@ -125,7 +129,9 @@ class _HomePageState extends State<HomePage> {
                                         fontFamily: globalFontFamily,
                                         fontSize: 15, // Increased from 13
                                         fontWeight: FontWeight.w400,
-                                        color: Colors.white.withValues(alpha: 0.7),
+                                        color: Colors.white.withValues(
+                                          alpha: 0.7,
+                                        ),
                                         letterSpacing: 1.8,
                                       ),
                                     ),
@@ -174,7 +180,9 @@ class _HomePageState extends State<HomePage> {
                                         Container(
                                           height: 22, // Slightly increased
                                           width: 1,
-                                          color: Colors.white.withValues(alpha: 0.2),
+                                          color: Colors.white.withValues(
+                                            alpha: 0.2,
+                                          ),
                                         ),
 
                                         SizedBox(width: 15),

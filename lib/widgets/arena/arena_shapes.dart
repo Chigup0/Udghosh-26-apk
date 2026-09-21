@@ -57,11 +57,7 @@ class ChamferedBox extends StatelessWidget {
           color: borderColor,
           strokeWidth: borderWidth,
         ),
-        child: Container(
-          color: fill,
-          padding: padding,
-          child: child,
-        ),
+        child: Container(color: fill, padding: padding, child: child),
       ),
     );
   }

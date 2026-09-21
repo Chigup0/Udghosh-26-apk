@@ -1,16 +1,22 @@
 import 'package:intl/intl.dart';
-import 'package:udghosh/api.dart';
+import 'package:udghosh/config/app_config.dart';
 
+/// One row from `/upcoming-events` or `/informal-sports` — both feeds share
+/// this payload shape.
+///
+/// Every field is parsed defensively: the backend sends `null` for anything
+/// unset, and a single null venue or malformed date used to take the whole
+/// list down.
 class Event {
   final int id;
   final String eventName;
   final String data;
   final String time;
-  final DateTime date;
+  final DateTime? date;
   final String venue;
   final String? imageUrl;
-  final DateTime createdAt;
-  final DateTime updatedAt;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
 
   Event({
     required this.id,
@@ -20,45 +26,52 @@ class Event {
     required this.date,
     required this.venue,
     this.imageUrl,
-    required this.createdAt,
-    required this.updatedAt,
+    this.createdAt,
+    this.updatedAt,
   });
+
+  static DateTime? _parseDate(Object? raw) {
+    if (raw == null) return null;
+    try {
+      return DateTime.parse(raw.toString()).toLocal();
+    } catch (_) {
+      return null;
+    }
+  }
 
   factory Event.fromJson(Map<String, dynamic> json) {
     return Event(
-      id: json['id'],
-      eventName: json['event_name'],
-      data: json['data'] ?? '',
-      time: json['time'],
-      date: DateTime.parse(json['date']),
-      venue: json['venue'],
-      imageUrl: json['image_url'],
-      createdAt: DateTime.parse(json['created_at']),
-      updatedAt: DateTime.parse(json['updated_at']),
+      id: int.tryParse('${json['id']}') ?? 0,
+      eventName: (json['event_name'] ?? 'Untitled').toString(),
+      data: (json['data'] ?? '').toString(),
+      time: (json['time'] ?? '').toString(),
+      date: _parseDate(json['date']),
+      venue: (json['venue'] ?? '').toString(),
+      imageUrl: AppConfig.resolveImageUrl(json['image_url']?.toString()),
+      createdAt: _parseDate(json['created_at']),
+      updatedAt: _parseDate(json['updated_at']),
     );
   }
 
-  /// Format the date as "Sep 19, 2025"
+  /// "Sep 19, 2025", or empty when the backend sent no date.
   String get formattedDate {
-    return DateFormat('MMM dd, yyyy').format(date);
+    final d = date;
+    if (d == null) return '';
+    return DateFormat('MMM dd, yyyy').format(d);
   }
 
-  /// Format the time as "5:05 PM"
+  /// "5:05 PM" from the backend's "HH:MM:SS".
   String get formattedTime {
-    // Parse time string with seconds
-    final timeParts = time.split(':');
-    final hour = int.parse(timeParts[0]);
-    final minute = int.parse(timeParts[1]);
-
-    final now = DateTime.now();
-    final dateTime = DateTime(now.year, now.month, now.day, hour, minute);
-    return DateFormat('h:mm a').format(dateTime);
+    if (time.isEmpty) return '';
+    try {
+      final parsed = DateFormat('HH:mm:ss').parse(time);
+      return DateFormat('h:mm a').format(parsed);
+    } catch (_) {
+      return time;
+    }
   }
 
-  /// Full URL for the image
-  String get fullImageUrl {
-    if (imageUrl == null || imageUrl!.isEmpty) return '';
-    if (imageUrl!.startsWith('http')) return imageUrl!;
-    return '$apiImgUrl$imageUrl'; // Replace with your base URL
-  }
+  /// Full image URL, or empty when there is no usable image. Legacy
+  /// `/uploads/...` paths no longer resolve and are treated as missing.
+  String get fullImageUrl => imageUrl ?? '';
 }

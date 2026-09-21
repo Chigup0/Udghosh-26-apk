@@ -2,12 +2,23 @@
 
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:liquid_glass_widgets/liquid_glass_widgets.dart'
+    show LiquidGlassWidgets;
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/services.dart' show DeviceOrientation, SystemChrome;
+import 'package:flutter/services.dart'
+    show DeviceOrientation, SystemChrome, SystemUiMode, SystemUiOverlayStyle;
 import 'package:http/http.dart' as http; // For HTTP requests
 import 'package:udghosh/DashBoard/pages/dashboard.dart'; // Your dashboard page
 import 'package:udghosh/services/auth_provider.dart';
+import 'package:flutter_neumorphic_plus/flutter_neumorphic.dart'
+    show NeumorphicTheme;
 import 'package:udghosh/theme/neo_theme.dart';
+import 'package:udghosh/config/lottie_assets.dart';
+import 'package:udghosh/config/feature_controller.dart';
+import 'package:udghosh/config/model_controller.dart';
+import 'package:udghosh/config/nav_style_controller.dart';
+import 'package:udghosh/model2/model2_shell.dart';
+import 'package:udghosh/theme/theme_controller.dart';
 import 'package:url_launcher/url_launcher.dart'; // To launch App Store URL
 
 import 'utils.dart';
@@ -45,13 +56,39 @@ Future<void> main() async {
   // --- FCM Setup ends here ---
 
   await AuthController.instance.restore();
+  await ThemeController.instance.restore();
+  await ModelController.instance.restore();
+  await LottieAssets.warmUp();
+  await NavStyleController.instance.restore();
+  await FeatureController.instance.restore();
+
+  // Pre-warms the liquid-glass fragment shaders so the bar does not flash a
+  // placeholder on first paint. Never fatal — the bar degrades on its own if
+  // the shaders are unavailable.
+  try {
+    await LiquidGlassWidgets.initialize();
+  } catch (e) {
+    debugPrint('Liquid glass init skipped: $e');
+  }
 
   WidgetsFlutterBinding.ensureInitialized();
+  // Draw behind the system bars so the glass chrome reads edge to edge.
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]).then((_) {
-    runApp(const MyApp());
+    runApp(
+      LiquidGlassWidgets.wrap(
+        adaptiveQuality: true,
+        // Bridges MaterialApp's ThemeMode into the glass brightness cascade,
+        // so the bar tints correctly when the app theme and the OS disagree —
+        // which is exactly the case for Themes 4/5/6.
+        brightnessResolver: Theme.maybeBrightnessOf,
+        child: const MyApp(),
+      ),
+    );
   });
 }
 
@@ -304,11 +341,34 @@ class _MyAppState extends State<MyApp> {
 
     // Show main app only if ready and no update required
     if (_isReady) {
-      return MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'Udghosh Sports',
-        theme: NeoTheme.themeData,
-        home: const DashBoard(index: 0),
+      return ListenableBuilder(
+        listenable: ThemeController.instance,
+        builder: (context, _) {
+          final controller = ThemeController.instance;
+          final platformBrightness = MediaQuery.platformBrightnessOf(context);
+          final isDark = controller.isDarkFor(platformBrightness);
+
+          // Swap the active palette before anything below reads NeoColors.
+          NeoColors.palette = controller.paletteFor(platformBrightness);
+
+          // NeumorphicTheme sits above MaterialApp so every pushed route — and
+          // every dialog drawn by the Navigator — inherits the same
+          // light-source vector and base colour.
+          return NeumorphicTheme(
+            themeMode: isDark ? ThemeMode.dark : ThemeMode.light,
+            theme: NeoTheme.neumorphic,
+            darkTheme: NeoTheme.neumorphic,
+            child: MaterialApp(
+              // Remounts the tree on a light/dark change so no `const`
+              // subtree is left holding the previous palette.
+              key: ValueKey(isDark),
+              debugShowCheckedModeBanner: false,
+              title: 'Udghosh Sports',
+              theme: NeoTheme.themeData,
+              home: const _ModelHost(),
+            ),
+          );
+        },
       );
     }
 
@@ -316,6 +376,39 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Container(color: const Color.fromARGB(255, 0, 0, 0)),
+    );
+  }
+}
+
+/// Chooses the UI shell. Both shells read the same controllers and services;
+/// only the presentation differs, so switching never changes behaviour.
+class _ModelHost extends StatelessWidget {
+  const _ModelHost();
+
+  @override
+  Widget build(BuildContext context) {
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: NeoColors.isDark
+            ? Brightness.light
+            : Brightness.dark,
+        statusBarBrightness: NeoColors.isDark
+            ? Brightness.dark
+            : Brightness.light,
+        systemNavigationBarColor: Colors.transparent,
+        systemNavigationBarIconBrightness: NeoColors.isDark
+            ? Brightness.light
+            : Brightness.dark,
+      ),
+      child: ListenableBuilder(
+        listenable: ModelController.instance,
+        builder: (context, _) {
+          return ModelController.instance.isModelTwo
+              ? const Model2Shell()
+              : DashBoard(index: DashBoard.lastIndex);
+        },
+      ),
     );
   }
 }

@@ -61,14 +61,17 @@ class ArenaText {
       );
 
   /// Uppercase micro-labels — eyebrows, badges, nav captions.
-  static TextStyle label({double size = 10.5, Color? color, double? tracking}) =>
-      GoogleFonts.plusJakartaSans(
-        fontSize: size,
-        color: color ?? ArenaColors.textSecondary,
-        fontWeight: FontWeight.w700,
-        letterSpacing: tracking ?? 0.9,
-        height: 1.2,
-      );
+  static TextStyle label({
+    double size = 10.5,
+    Color? color,
+    double? tracking,
+  }) => GoogleFonts.plusJakartaSans(
+    fontSize: size,
+    color: color ?? ArenaColors.textSecondary,
+    fontWeight: FontWeight.w700,
+    letterSpacing: tracking ?? 0.9,
+    height: 1.2,
+  );
 
   /// Body / team names / list rows.
   static TextStyle body({double size = 13, Color? color, FontWeight? weight}) =>

@@ -85,8 +85,11 @@ class GalleryHighLight extends StatelessWidget {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Icon(Icons.add_circle_outline,
-                            size: 28, color: Colors.white),
+                        const Icon(
+                          Icons.add_circle_outline,
+                          size: 28,
+                          color: Colors.white,
+                        ),
                         const SizedBox(height: 8),
                         Text(
                           "See more",
@@ -146,8 +149,10 @@ class GalleryHighLight extends StatelessWidget {
                             width: width,
                             height: height,
                             color: Colors.grey.shade800,
-                            child: const Icon(Icons.broken_image,
-                                color: Colors.white),
+                            child: const Icon(
+                              Icons.broken_image,
+                              color: Colors.white,
+                            ),
                           ),
                         ),
                         // Overlay
@@ -164,7 +169,9 @@ class GalleryHighLight extends StatelessWidget {
                                   end: Alignment.bottomCenter,
                                   colors: [
                                     Colors.transparent,
-                                    const Color(0xFF0F172A).withValues(alpha: 0.3),
+                                    const Color(
+                                      0xFF0F172A,
+                                    ).withValues(alpha: 0.3),
                                   ],
                                 ),
                               ),

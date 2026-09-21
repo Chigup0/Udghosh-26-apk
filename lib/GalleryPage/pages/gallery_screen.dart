@@ -1,12 +1,21 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter_neumorphic_plus/flutter_neumorphic.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:udghosh/config/lottie_assets.dart';
 import 'package:udghosh/models/gallery_item.dart';
 import 'package:udghosh/services/api_service.dart';
 import 'package:udghosh/theme/neo_theme.dart';
+import 'package:udghosh/widgets/app_lottie.dart';
+import 'package:udghosh/widgets/nav/nav_spacer.dart';
+import 'package:udghosh/widgets/press_scale.dart';
 import 'package:udghosh/widgets/neo/neo_selectors.dart';
 
-/// Asymmetric 2-column masonry gallery with category filter chips.
+/// Asymmetric 2-column masonry gallery.
+///
+/// `/gallery` returns `{id, image_url, created_at}` with no pagination and no
+/// category, so the filter bar is derived from whatever categories the data
+/// actually carries and stays hidden when there are none — rather than
+/// offering hardcoded filters that can only ever return nothing.
 class GalleryScreen extends StatefulWidget {
   const GalleryScreen({super.key});
 
@@ -15,9 +24,10 @@ class GalleryScreen extends StatefulWidget {
 }
 
 class _GalleryScreenState extends State<GalleryScreen> {
-  static const _categories = ['All', 'Opening Night', 'Athletics', 'Finals', 'Pronite'];
+  static const _allLabel = 'All';
 
   List<GalleryItem> _items = [];
+  List<String> _categories = const [];
   bool _loading = true;
   int _categoryIndex = 0;
 
@@ -34,13 +44,29 @@ class _GalleryScreenState extends State<GalleryScreen> {
     } catch (_) {
       _items = [];
     }
-    if (mounted) setState(() => _loading = false);
+    if (!mounted) return;
+
+    final found =
+        _items
+            .map((i) => i.category)
+            .whereType<String>()
+            .where((c) => c.trim().isNotEmpty)
+            .toSet()
+            .toList()
+          ..sort();
+
+    setState(() {
+      // Only worth a filter bar when there is more than one bucket to pick.
+      _categories = found.length > 1 ? [_allLabel, ...found] : const [];
+      _categoryIndex = 0;
+      _loading = false;
+    });
   }
 
   List<GalleryItem> get _filtered {
-    if (_categoryIndex == 0) return _items;
-    final cat = _categories[_categoryIndex];
-    return _items.where((i) => i.category == cat).toList();
+    if (_categories.isEmpty || _categoryIndex == 0) return _items;
+    final category = _categories[_categoryIndex];
+    return _items.where((i) => i.category == category).toList();
   }
 
   void _openFullscreen(BuildContext context, String url) {
@@ -67,86 +93,81 @@ class _GalleryScreenState extends State<GalleryScreen> {
     return Column(
       children: [
         const SizedBox(height: 8),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: NeoPillBar(
-            labels: _categories,
-            selectedIndex: _categoryIndex,
-            onSelected: (i) => setState(() => _categoryIndex = i),
+        if (_categories.isNotEmpty) ...[
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: NeoPillBar(
+              labels: _categories,
+              selectedIndex: _categoryIndex,
+              onSelected: (i) => setState(() => _categoryIndex = i),
+            ),
           ),
-        ),
-        const SizedBox(height: 12),
+          const SizedBox(height: 12),
+        ],
         Expanded(
           child: RefreshIndicator(
             onRefresh: _load,
             color: NeoColors.waveTeal,
             child: _loading
-                ? const Center(child: CircularProgressIndicator(color: NeoColors.waveTeal))
+                ? const AppLoader()
                 : showDemo
-                    ? _demoPlaceholder(context)
-                    : MasonryGridView.count(
-                        padding: const EdgeInsets.fromLTRB(12, 0, 12, 24),
-                        crossAxisCount: 2,
-                        mainAxisSpacing: 12,
-                        crossAxisSpacing: 12,
-                        itemCount: images.length,
-                        itemBuilder: (context, i) {
-                          final item = images[i];
-                          final height = 140.0 + (i % 3) * 40;
-                          return GestureDetector(
-                            onTap: () => _openFullscreen(context, item.imageUrl),
-                            child: Container(
-                              height: height,
-                              decoration: BoxDecoration(
-                                color: NeoColors.surface,
-                                borderRadius: BorderRadius.circular(20),
-                                boxShadow: NeoShadows.raisedSmall(),
-                              ),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(20),
-                                child: CachedNetworkImage(
-                                  imageUrl: item.imageUrl,
-                                  fit: BoxFit.cover,
-                                  errorWidget: (context, url, error) => Container(
-                                    color: NeoColors.surfaceRecessed,
-                                    child: const Icon(Icons.broken_image_outlined, color: NeoColors.textMuted),
-                                  ),
+                ? ListView(
+                    // Scrollable so pull-to-refresh still works on an empty
+                    // gallery; a bare Center swallows the gesture.
+                    padding: const EdgeInsets.only(top: 40),
+                    children: const [
+                      AppStateView(
+                        anim: AppAnim.noPhotos,
+                        title: 'No photos yet',
+                        message:
+                            'Shots from the fest will show up here as '
+                            'they are uploaded.',
+                      ),
+                    ],
+                  )
+                : MasonryGridView.count(
+                    padding: EdgeInsets.fromLTRB(
+                      12,
+                      0,
+                      12,
+                      NavMetrics.gutter(context),
+                    ),
+                    crossAxisCount: 2,
+                    mainAxisSpacing: 12,
+                    crossAxisSpacing: 12,
+                    itemCount: images.length,
+                    itemBuilder: (context, i) {
+                      final item = images[i];
+                      final height = 140.0 + (i % 3) * 40;
+                      return PressScale(
+                        onTap: () => _openFullscreen(context, item.imageUrl),
+                        child: Neumorphic(
+                          style: NeoTheme.raisedStyle(
+                            radius: 20,
+                            depth: NeoDepth.chip,
+                          ),
+                          child: SizedBox(
+                            height: height,
+                            child: CachedNetworkImage(
+                              imageUrl: item.imageUrl,
+                              fit: BoxFit.cover,
+                              // Gallery links are external and can rot.
+                              errorWidget: (context, url, error) => Container(
+                                color: NeoColors.surfaceRecessed,
+                                child: Icon(
+                                  Icons.broken_image_outlined,
+                                  color: NeoColors.textMuted,
                                 ),
                               ),
                             ),
-                          );
-                        },
-                      ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
           ),
         ),
       ],
-    );
-  }
-
-  Widget _demoPlaceholder(BuildContext context) {
-    return Center(
-      child: GestureDetector(
-        onTap: () => _openFullscreen(context, ''),
-        child: Container(
-          width: 220,
-          height: 220,
-          decoration: BoxDecoration(
-            color: NeoColors.surface,
-            borderRadius: BorderRadius.circular(24),
-            boxShadow: NeoShadows.raised(),
-          ),
-          child: const Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.image_rounded, size: 48, color: NeoColors.waveTeal),
-              SizedBox(height: 10),
-              Text('DEMO PHOTO', style: TextStyle(fontWeight: FontWeight.w800, color: NeoColors.logoTeal)),
-              SizedBox(height: 4),
-              Text('Tap for fullscreen', style: TextStyle(fontSize: 11, color: NeoColors.textMuted)),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }

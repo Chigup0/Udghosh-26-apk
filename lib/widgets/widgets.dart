@@ -4,6 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:udghosh/utils.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+
 // import 'dart:math';
 
 List<String> splitName(String name) => name.split(' ');
@@ -484,7 +485,10 @@ class TeamLogo extends StatelessWidget {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               gradient: RadialGradient(
-                colors: [Colors.white.withValues(alpha: 0.25), Colors.transparent],
+                colors: [
+                  Colors.white.withValues(alpha: 0.25),
+                  Colors.transparent,
+                ],
                 radius: 0.8,
                 center: Alignment.topLeft,
               ),
@@ -500,7 +504,10 @@ class TeamLogo extends StatelessWidget {
               fontWeight: FontWeight.bold,
               color: Colors.white,
               shadows: [
-                Shadow(color: Colors.black.withValues(alpha: 0.7), blurRadius: 5),
+                Shadow(
+                  color: Colors.black.withValues(alpha: 0.7),
+                  blurRadius: 5,
+                ),
               ],
             ),
           ),
