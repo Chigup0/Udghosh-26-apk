@@ -1,5 +1,7 @@
 // ignore_for_file: avoid_print
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart'
@@ -9,7 +11,6 @@ import 'package:flutter/services.dart'
     show DeviceOrientation, SystemChrome, SystemUiMode, SystemUiOverlayStyle;
 import 'package:http/http.dart' as http; // For HTTP requests
 import 'package:udghosh/DashBoard/pages/dashboard.dart'; // Your dashboard page
-import 'package:udghosh/services/auth_provider.dart';
 import 'package:flutter_neumorphic_plus/flutter_neumorphic.dart'
     show NeumorphicTheme;
 import 'package:udghosh/theme/neo_theme.dart';
@@ -19,6 +20,7 @@ import 'package:udghosh/config/model_controller.dart';
 import 'package:udghosh/config/nav_style_controller.dart';
 import 'package:udghosh/model2/model2_shell.dart';
 import 'package:udghosh/theme/theme_controller.dart';
+import 'package:udghosh/widgets/notification_permission_dialog.dart';
 import 'package:url_launcher/url_launcher.dart'; // To launch App Store URL
 
 import 'utils.dart';
@@ -29,67 +31,69 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   debugPrint('Handling background message: ${message.messageId}');
 }
 
+/// Checks the current permission status and subscribes to the broadcast
+/// topic if a previous launch already granted it. Never prompts — that only
+/// happens from the themed in-app dialog (see `_ModelHost`). Fire-and-forget
+/// from `main()` so a slow FCM round-trip never delays first paint.
+Future<void> _syncFcmTopicSubscription() async {
+  try {
+    final messaging = FirebaseMessaging.instance;
+    final settings = await messaging.getNotificationSettings();
+    if (settings.authorizationStatus == AuthorizationStatus.authorized ||
+        settings.authorizationStatus == AuthorizationStatus.provisional) {
+      await messaging.subscribeToTopic('all_users');
+      debugPrint('Subscribed to all_users topic');
+    }
+  } catch (e) {
+    debugPrint('FCM topic sync skipped: $e');
+  }
+}
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-
-  // --- FCM Setup starts here ---
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-
-  FirebaseMessaging messaging = FirebaseMessaging.instance;
-  NotificationSettings settings = await messaging.requestPermission(
-    alert: true,
-    badge: true,
-    sound: true,
-  );
-
-  if (settings.authorizationStatus == AuthorizationStatus.authorized ||
-      settings.authorizationStatus == AuthorizationStatus.provisional) {
-    await messaging.subscribeToTopic('all_users');
-    debugPrint('Subscribed to all_users topic');
-  }
-
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
     debugPrint('Foreground notification: ${message.notification?.title}');
   });
 
-  // --- FCM Setup ends here ---
+  // Independent restores — none of these depend on each other, so running
+  // them together instead of one `await` per line is most of what makes
+  // startup fast. The liquid-glass shader warm-up rides along too: it is
+  // slow but must finish before `runApp` so the nav bar never flashes a
+  // placeholder, and "never fatal" is preserved with its own try/catch.
+  await Future.wait([
+    ThemeController.instance.restore(),
+    ModelController.instance.restore(),
+    LottieAssets.warmUp(),
+    NavStyleController.instance.restore(),
+    FeatureController.instance.restore(),
+    LiquidGlassWidgets.initialize().catchError(
+      (e) => debugPrint('Liquid glass init skipped: $e'),
+    ),
+  ]);
 
-  await AuthController.instance.restore();
-  await ThemeController.instance.restore();
-  await ModelController.instance.restore();
-  await LottieAssets.warmUp();
-  await NavStyleController.instance.restore();
-  await FeatureController.instance.restore();
-
-  // Pre-warms the liquid-glass fragment shaders so the bar does not flash a
-  // placeholder on first paint. Never fatal — the bar degrades on its own if
-  // the shaders are unavailable.
-  try {
-    await LiquidGlassWidgets.initialize();
-  } catch (e) {
-    debugPrint('Liquid glass init skipped: $e');
-  }
-
-  WidgetsFlutterBinding.ensureInitialized();
   // Draw behind the system bars so the glass chrome reads edge to edge.
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-
-  SystemChrome.setPreferredOrientations([
+  await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
-  ]).then((_) {
-    runApp(
-      LiquidGlassWidgets.wrap(
-        adaptiveQuality: true,
-        // Bridges MaterialApp's ThemeMode into the glass brightness cascade,
-        // so the bar tints correctly when the app theme and the OS disagree —
-        // which is exactly the case for Themes 4/5/6.
-        brightnessResolver: Theme.maybeBrightnessOf,
-        child: const MyApp(),
-      ),
-    );
-  });
+  ]);
+
+  // Not awaited: an FCM network round-trip has no business delaying the
+  // first frame.
+  unawaited(_syncFcmTopicSubscription());
+
+  runApp(
+    LiquidGlassWidgets.wrap(
+      adaptiveQuality: true,
+      // Bridges MaterialApp's ThemeMode into the glass brightness cascade,
+      // so the bar tints correctly when the app theme and the OS disagree —
+      // which is exactly the case for Themes 4/5/6.
+      brightnessResolver: Theme.maybeBrightnessOf,
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatefulWidget {
@@ -103,16 +107,16 @@ class _MyAppState extends State<MyApp> {
   // Simple version string - update this manually when releasing new versions
 
   bool _updateRequired = false;
-  bool _isReady = false;
+  // The app renders immediately; the version check runs in the background
+  // and only swaps in the update screen if it actually finds a mismatch —
+  // a slow or flaky request to GitHub Pages must never hold up first paint.
   String _latestVersion = '';
 
   Future<String> _fetchLatestVersion() async {
     try {
       final response = await http
           .get(
-            Uri.parse(
-              'https://udghosh-25.github.io/udghosh.org/app_version.txt',
-            ),
+            Uri.parse('https://chigup0.github.io/udghosh.org/app_version.txt'),
             headers: {'Cache-Control': 'no-cache'},
           )
           .timeout(const Duration(seconds: 10));
@@ -157,28 +161,18 @@ class _MyAppState extends State<MyApp> {
     try {
       _latestVersion = await _fetchLatestVersion();
 
-      print('Current version: $appVersion');
-      print('Latest version: $_latestVersion');
+      debugPrint('Current version: $appVersion');
+      debugPrint('Latest version: $_latestVersion');
 
       // Simple string comparison
-      bool updateRequired = appVersion != _latestVersion;
-
-      setState(() {
-        _updateRequired = updateRequired;
-        _isReady = true;
-      });
-
-      if (updateRequired) {
-        debugPrint('Update required');
-      } else {
-        debugPrint('App is up to date');
-      }
+      final updateRequired = appVersion != _latestVersion;
+      if (!mounted || !updateRequired) return;
+      setState(() => _updateRequired = true);
+      debugPrint('Update required');
     } catch (e) {
-      debugPrint("Error checking for updates: $e");
-      setState(() {
-        _updateRequired = false; // Allow access if version check fails
-        _isReady = true;
-      });
+      // Allow access if the version check fails — never block the app on a
+      // flaky network request.
+      debugPrint('Error checking for updates: $e');
     }
   }
 
@@ -292,12 +286,7 @@ class _MyAppState extends State<MyApp> {
 
                 // Retry button
                 TextButton(
-                  onPressed: () {
-                    setState(() {
-                      _isReady = false;
-                    });
-                    checkForUpdates();
-                  },
+                  onPressed: checkForUpdates,
                   child: Text(
                     'Check Again',
                     style: TextStyle(color: Colors.grey.shade400, fontSize: 16),
@@ -331,7 +320,8 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    // Show update screen if update is required, otherwise show main app
+    // The background version check can swap this in later, but first paint
+    // never waits on it.
     if (_updateRequired) {
       return MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -339,51 +329,58 @@ class _MyAppState extends State<MyApp> {
       );
     }
 
-    // Show main app only if ready and no update required
-    if (_isReady) {
-      return ListenableBuilder(
-        listenable: ThemeController.instance,
-        builder: (context, _) {
-          final controller = ThemeController.instance;
-          final platformBrightness = MediaQuery.platformBrightnessOf(context);
-          final isDark = controller.isDarkFor(platformBrightness);
+    return ListenableBuilder(
+      listenable: ThemeController.instance,
+      builder: (context, _) {
+        final controller = ThemeController.instance;
+        final platformBrightness = MediaQuery.platformBrightnessOf(context);
+        final isDark = controller.isDarkFor(platformBrightness);
 
-          // Swap the active palette before anything below reads NeoColors.
-          NeoColors.palette = controller.paletteFor(platformBrightness);
+        // Swap the active palette before anything below reads NeoColors.
+        NeoColors.palette = controller.paletteFor(platformBrightness);
 
-          // NeumorphicTheme sits above MaterialApp so every pushed route — and
-          // every dialog drawn by the Navigator — inherits the same
-          // light-source vector and base colour.
-          return NeumorphicTheme(
-            themeMode: isDark ? ThemeMode.dark : ThemeMode.light,
-            theme: NeoTheme.neumorphic,
-            darkTheme: NeoTheme.neumorphic,
-            child: MaterialApp(
-              // Remounts the tree on a light/dark change so no `const`
-              // subtree is left holding the previous palette.
-              key: ValueKey(isDark),
-              debugShowCheckedModeBanner: false,
-              title: 'Udghosh Sports',
-              theme: NeoTheme.themeData,
-              home: const _ModelHost(),
-            ),
-          );
-        },
-      );
-    }
-
-    // Show empty container while checking (no loading screen)
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Container(color: const Color.fromARGB(255, 0, 0, 0)),
+        // NeumorphicTheme sits above MaterialApp so every pushed route — and
+        // every dialog drawn by the Navigator — inherits the same
+        // light-source vector and base colour.
+        return NeumorphicTheme(
+          themeMode: isDark ? ThemeMode.dark : ThemeMode.light,
+          theme: NeoTheme.neumorphic,
+          darkTheme: NeoTheme.neumorphic,
+          child: MaterialApp(
+            // Remounts the tree on a light/dark change so no `const`
+            // subtree is left holding the previous palette.
+            key: ValueKey(isDark),
+            debugShowCheckedModeBanner: false,
+            title: 'Udghosh Sports',
+            theme: NeoTheme.themeData,
+            home: const _ModelHost(),
+          ),
+        );
+      },
     );
   }
 }
 
 /// Chooses the UI shell. Both shells read the same controllers and services;
 /// only the presentation differs, so switching never changes behaviour.
-class _ModelHost extends StatelessWidget {
+class _ModelHost extends StatefulWidget {
   const _ModelHost();
+
+  @override
+  State<_ModelHost> createState() => _ModelHostState();
+}
+
+class _ModelHostState extends State<_ModelHost> {
+  @override
+  void initState() {
+    super.initState();
+    // Post-frame: needs a BuildContext attached to the tree, and must not
+    // block first paint. Runs on every cold start until permission is
+    // granted — see the dialog's own doc comment for why.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) maybeShowNotificationPermissionPrompt(context);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {

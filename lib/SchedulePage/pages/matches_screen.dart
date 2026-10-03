@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:udghosh/config/app_config.dart';
 import 'package:udghosh/config/lottie_assets.dart';
-import 'package:udghosh/models/demo_data.dart';
 import 'package:udghosh/models/match_record.dart';
 import 'package:udghosh/services/api_service.dart';
 import 'package:udghosh/theme/neo_theme.dart';
@@ -16,8 +15,7 @@ import 'package:udghosh/widgets/neo/neo_selectors.dart';
 ///
 /// All three tabs are paginated (the backend caps a page at 500 and defaults
 /// to 10, so the page size is passed explicitly). Live re-polls page 1 every
-/// 20s. Each tab renders one demo card instead of an empty state so the
-/// screen never looks broken pre-launch.
+/// 20s.
 class MatchesScreen extends StatefulWidget {
   const MatchesScreen({super.key, this.initialSportIndex = 0});
   final int initialSportIndex;
@@ -216,14 +214,14 @@ class MatchesScreenState extends State<MatchesScreen> {
     }
   }
 
-  MatchRecord _demoMatch() {
+  String get _emptyTitle {
     switch (_tabIndex) {
       case _liveTab:
-        return DemoData.liveMatch(_sport);
+        return 'Nothing live right now';
       case _upcomingTab:
-        return DemoData.upcomingMatch(_sport);
+        return 'No upcoming fixtures';
       default:
-        return DemoData.completedMatch(_sport);
+        return 'No completed matches yet';
     }
   }
 
@@ -269,10 +267,10 @@ class MatchesScreenState extends State<MatchesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // A search that legitimately matches nothing should say so rather than
-    // show a demo card that looks like a result.
+    // A search that legitimately matches nothing gets its own message rather
+    // than the generic "nothing scheduled" state.
     final isEmpty = _items.isEmpty;
-    final showDemo = isEmpty && _search.isEmpty && !_loading;
+    final showEmpty = isEmpty && _search.isEmpty && !_loading;
     final showNoResults = isEmpty && _search.isNotEmpty && !_loading;
 
     return RefreshIndicator(
@@ -337,8 +335,13 @@ class MatchesScreenState extends State<MatchesScreen> {
                     '${AppConfig.sportLabel(_sport)}.',
                 compact: true,
               )
-            else if (showDemo)
-              MatchCard(match: _demoMatch(), variant: _variant, demo: true)
+            else if (showEmpty)
+              AppStateView(
+                anim: AppAnim.noFixtures,
+                sport: _sport,
+                title: _emptyTitle,
+                compact: true,
+              )
             else
               for (final match in _items) ...[
                 MatchCard(match: match, variant: _variant),

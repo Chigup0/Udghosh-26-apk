@@ -4,10 +4,8 @@ import 'package:flutter_neumorphic_plus/flutter_neumorphic.dart'
 import 'package:udghosh/config/core_team.dart';
 import 'package:udghosh/widgets/team_photo.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:udghosh/ProfilePage/pages/login_screen.dart';
 import 'package:udghosh/ProfilePage/pages/profile_screen.dart';
 import 'package:udghosh/NoticePage/pages/notices_screen.dart';
-import 'package:udghosh/services/auth_provider.dart';
 import 'package:udghosh/theme/neo_theme.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:udghosh/theme/neo_palette.dart';
@@ -26,139 +24,93 @@ class OtherScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListenableBuilder(
-      listenable: AuthController.instance,
-      builder: (context, _) {
-        final auth = AuthController.instance;
-        return ListView(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-          children: [
-            if (auth.isLoggedIn)
-              NeoCard(
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const ProfileScreen()),
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+      children: [
+        NeoCard(
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const ProfileScreen()),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 56,
+                height: 56,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: NeoColors.surfaceRecessed,
+                  shape: BoxShape.circle,
                 ),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 56,
-                      height: 56,
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        color: NeoColors.surfaceRecessed,
-                        shape: BoxShape.circle,
-                      ),
-                      child: Text(
-                        auth.initials,
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.w800,
-                          color: NeoColors.waveInk,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 14),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            auth.name?.isNotEmpty == true
-                                ? auth.name!
-                                : 'Athlete',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w800,
-                              fontSize: 16,
-                              color: NeoColors.logoTeal,
-                            ),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            auth.email ?? '',
-                            style: TextStyle(
-                              color: NeoColors.textMuted,
-                              fontSize: 12,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Icon(
-                      Icons.chevron_right_rounded,
-                      color: NeoColors.textMuted,
-                    ),
-                  ],
+                child: Icon(
+                  Icons.emoji_events_rounded,
+                  color: NeoColors.waveInk,
+                  size: 26,
                 ),
-              )
-            else
-              NeoCard(
+              ),
+              const SizedBox(width: 14),
+              Expanded(
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(
-                      Icons.lock_person_rounded,
-                      size: 32,
-                      color: NeoColors.waveTeal,
-                    ),
-                    const SizedBox(height: 10),
                     Text(
-                      'Sign in to access personalised schedules & games',
-                      textAlign: TextAlign.center,
+                      'Udghosh Sports',
                       style: TextStyle(
-                        fontWeight: FontWeight.w700,
+                        fontWeight: FontWeight.w800,
+                        fontSize: 16,
                         color: NeoColors.logoTeal,
                       ),
                     ),
-                    const SizedBox(height: 14),
-                    NeoPillButton(
-                      label: 'LOGIN WITH EMAIL OTP',
-                      icon: Icons.mail_outline_rounded,
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (_) => const LoginScreen()),
+                    const SizedBox(height: 2),
+                    Text(
+                      'App info & announcements',
+                      style: TextStyle(
+                        color: NeoColors.textMuted,
+                        fontSize: 12,
                       ),
                     ),
                   ],
                 ),
               ),
-            const SizedBox(height: 20),
-            const _ModelCard(),
-            const SizedBox(height: 20),
-            const _ExtrasCard(),
-            const SizedBox(height: 20),
-            const _NavStyleCard(),
-            const SizedBox(height: 20),
-            const _AppearanceCard(),
-            const SizedBox(height: 20),
-            NeoCard(
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const NoticesScreen()),
-              ),
-              child: Row(
-                children: [
-                  Icon(Icons.campaign_rounded, color: NeoColors.waveTeal),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      'Announcements & Notices',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w700,
-                        color: NeoColors.logoTeal,
-                      ),
-                    ),
+              Icon(Icons.chevron_right_rounded, color: NeoColors.textMuted),
+            ],
+          ),
+        ),
+        const SizedBox(height: 20),
+        const _ModelCard(),
+        const SizedBox(height: 20),
+        const _ExtrasCard(),
+        const SizedBox(height: 20),
+        const _NavStyleCard(),
+        const SizedBox(height: 20),
+        const _AppearanceCard(),
+        const SizedBox(height: 20),
+        NeoCard(
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const NoticesScreen()),
+          ),
+          child: Row(
+            children: [
+              Icon(Icons.campaign_rounded, color: NeoColors.waveTeal),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  'Announcements & Notices',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w700,
+                    color: NeoColors.logoTeal,
                   ),
-                  Icon(Icons.chevron_right_rounded, color: NeoColors.textMuted),
-                ],
+                ),
               ),
-            ),
-            const SizedBox(height: 24),
-            const _CoreTeamSection(),
-            // Logout lives on the profile screen — one place only.
-            const NavSpacer(),
-          ],
-        );
-      },
+              Icon(Icons.chevron_right_rounded, color: NeoColors.textMuted),
+            ],
+          ),
+        ),
+        const SizedBox(height: 24),
+        const _CoreTeamSection(),
+        const NavSpacer(),
+      ],
     );
   }
 }
@@ -373,8 +325,7 @@ class _CoreTeamSectionState extends State<_CoreTeamSection> {
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          '${CoreTeam.memberCount} members across '
-                          '${wings.length} wings',
+                          '${CoreTeam.memberCount} members',
                           style: TextStyle(
                             fontSize: 11,
                             color: NeoColors.textMuted,

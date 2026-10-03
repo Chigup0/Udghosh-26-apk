@@ -72,8 +72,8 @@ enum AppTheme {
 
 /// App-wide theme preference.
 ///
-/// Same shape as `AuthController`: a plain singleton `ChangeNotifier` with its
-/// own persistence, so no state-management package is pulled in just for this.
+/// A plain singleton `ChangeNotifier` with its own persistence, so no
+/// state-management package is pulled in just for this.
 /// Screens never listen to it directly — the root widget does, and the active
 /// [NeoPalette] is swapped before the tree rebuilds.
 class ThemeController extends ChangeNotifier {

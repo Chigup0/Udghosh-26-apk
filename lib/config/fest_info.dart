@@ -81,7 +81,7 @@ class FestInfo {
     ),
     FestChannel(
       'WhatsApp',
-      'https://chat.whatsapp.com/BDCIfPdcxVS7Ai9njjn8Z7',
+      'https://whatsapp.com/channel/0029Vb5lN5wHQbS9nLwj9A0d',
       HugeIcons.strokeRoundedWhatsapp,
     ),
   ];

@@ -1,4 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Android 13+ requires this to be declared before the runtime prompt
+         (FirebaseMessaging.requestPermission / permission_handler) can ask
+         for it. -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <application
         android:label="Udghosh"
         android:name="${applicationName}"

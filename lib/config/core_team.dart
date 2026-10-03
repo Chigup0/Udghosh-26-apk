@@ -82,20 +82,6 @@ class CoreTeam {
 
   static const List<TeamWing> _all = [
     TeamWing(
-      id: 'teams-about-fc',
-      name: 'Festival Coordinators',
-      members: [
-        TeamMember(
-          name: 'Sparsh',
-          role: 'Festival Coordinator',
-          photo:
-              'https://live.staticflickr.com/65535/55426427001_488fc2aaf4_b.jpg',
-          phone: '9140599972',
-          email: 'sparshg23@iitk.ac.in',
-        ),
-      ],
-    ),
-    TeamWing(
       id: 'teams-about-hospi',
       name: 'Hospitality',
       members: [
@@ -129,8 +115,10 @@ class CoreTeam {
               'https://live.staticflickr.com/65535/55426825400_f88fb37810_b.jpg',
           phone: '7377093140',
           email: 'amlancd23@iitk.ac.in',
-          alignment: Alignment.bottomCenter,
-          scale: 2,
+          // Full-body shot with the face near the top — bottomCenter + a 2x
+          // zoom cropped the head out entirely. Framed on the top instead.
+          alignment: Alignment.topCenter,
+          scale: 1.3,
         ),
         TeamMember(
           name: 'Anshika',
@@ -244,6 +232,7 @@ class CoreTeam {
           role: 'Head',
           photo:
               'https://live.staticflickr.com/65535/54820124016_f82dd1a8f2_w.jpg',
+          alignment: Alignment(0, -0.7),
         ),
       ],
     ),
@@ -283,6 +272,9 @@ class CoreTeam {
               'https://live.staticflickr.com/65535/55426597004_c5084bfa8a_b.jpg',
           phone: '7673921276',
           email: 'glokesh23@iitk.ac.in',
+          // Narrow full-body portrait — a centred square crop lands entirely
+          // below the head. Framed on the top so the face is included.
+          alignment: Alignment.topCenter,
         ),
         TeamMember(
           name: 'Mohith Varma',
@@ -299,6 +291,9 @@ class CoreTeam {
               'https://live.staticflickr.com/65535/55426596979_232220763b_b.jpg',
           phone: '6205929998',
           email: 'raghubirk23@iitk.ac.in',
+          // Same narrow full-body framing as Lokesh's — top-align to keep
+          // the face in the crop.
+          alignment: Alignment.topCenter,
         ),
       ],
     ),
@@ -330,6 +325,20 @@ class CoreTeam {
           email: 'harshabs23@iitk.ac.in',
           linkedin: 'https://www.linkedin.com/in/harshavardan-yadav-037130282',
           scale: 2,
+        ),
+      ],
+    ),
+    TeamWing(
+      id: 'teams-about-fc',
+      name: 'Festival Coordinators',
+      members: [
+        TeamMember(
+          name: 'Sparsh',
+          role: 'Festival Coordinator',
+          photo:
+              'https://live.staticflickr.com/65535/55426427001_488fc2aaf4_b.jpg',
+          phone: '9140599972',
+          email: 'sparshg23@iitk.ac.in',
         ),
       ],
     ),

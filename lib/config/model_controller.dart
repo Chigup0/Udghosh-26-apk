@@ -4,9 +4,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 /// Which UI shell the app renders.
 ///
 /// Both models run on exactly the same services, models and controllers —
-/// `ApiService`, `AuthController`, `ThemeController`, `MatchRecord`. Only the
-/// presentation differs, so switching models never changes what the app can
-/// do, what it fetches, or what is stored.
+/// `ApiService`, `ThemeController`, `MatchRecord`. Only the presentation
+/// differs, so switching models never changes what the app can do, what it
+/// fetches, or what is stored.
 enum AppModel {
   /// The shipped soft-neumorphic UI. Frozen — nothing here is modified.
   one,

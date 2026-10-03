@@ -1,13 +1,14 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter_neumorphic_plus/flutter_neumorphic.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:udghosh/EventsPage/pages/event_detail_screen.dart';
 import 'package:udghosh/config/app_config.dart';
 import 'package:udghosh/config/fest_info.dart';
+import 'package:udghosh/config/lottie_assets.dart';
 import 'package:udghosh/model2/theme/m2_style.dart';
 import 'package:udghosh/model2/widgets/m2_match_card.dart';
 import 'package:udghosh/model2/widgets/m2_widgets.dart';
-import 'package:udghosh/models/demo_data.dart';
 import 'package:udghosh/models/event.dart';
 import 'package:udghosh/models/gallery_item.dart';
 import 'package:udghosh/models/match_record.dart';
@@ -45,7 +46,9 @@ class _M2HomeState extends State<M2Home> {
   String? _heroSport;
   Map<String, int> _counts = {};
   List<Event> _events = [];
-  List<Event> _informal = [];
+  // "Informal sports" feed, rebranded on Home as the "Major attractions"
+  // carousel — same backend endpoint, different presentation.
+  List<Event> _attractions = [];
   List<GalleryItem> _gallery = [];
   bool _loading = true;
 
@@ -71,7 +74,7 @@ class _M2HomeState extends State<M2Home> {
       _counts = counts;
       _liveMatch = results[0] as MatchRecord?;
       _events = results[1] as List<Event>;
-      _informal = results[2] as List<Event>;
+      _attractions = results[2] as List<Event>;
       _gallery = results[3] as List<GalleryItem>;
       _loading = false;
     });
@@ -109,28 +112,66 @@ class _M2HomeState extends State<M2Home> {
       child: ListView(
         padding: const EdgeInsets.fromLTRB(16, 4, 16, 0),
         children: [
+          if (_attractions.isNotEmpty) ...[
+            const M2SectionTitle('Major attractions'),
+            _attractionsCarousel(),
+            const SizedBox(height: 22),
+          ],
           _statusBar(),
           const SizedBox(height: 18),
-          M2MatchCard(
-            match: _liveMatch ?? DemoData.liveMatch('basketball'),
-            kind: M2CardKind.live,
-            demo: _liveMatch == null,
-            onTap: () => widget.onOpenMatches(sport: _heroSport),
-          ),
+          if (_liveMatch != null)
+            M2MatchCard(
+              match: _liveMatch!,
+              kind: M2CardKind.live,
+              onTap: () => widget.onOpenMatches(sport: _heroSport),
+            )
+          else if (!_loading)
+            M2Plinth(
+              onTap: () => widget.onOpenMatches(),
+              radius: M2.rCard,
+              padding: const EdgeInsets.all(14),
+              child: Row(
+                children: [
+                  M2Well(
+                    radius: 13,
+                    padding: const EdgeInsets.all(11),
+                    child: HugeIcon(
+                      icon: HugeIcons.strokeRoundedChampion,
+                      color: NeoColors.waveInk,
+                      size: 19,
+                    ),
+                  ),
+                  const SizedBox(width: 13),
+                  Expanded(
+                    child: Text(
+                      'No live match right now',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w800,
+                        fontSize: 13.5,
+                        color: NeoColors.logoTeal,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            )
+          else
+            const AppLoader(size: 56, padding: 16),
           if (_counts.isNotEmpty) ...[
             const SizedBox(height: 22),
             const M2SectionTitle('Live right now'),
             _liveDials(),
           ],
           const SizedBox(height: 22),
-          const M2SectionTitle('Jump to'),
-          _actionDeck(),
-          const SizedBox(height: 22),
           const M2SectionTitle('Upcoming events'),
           if (_loading)
             const AppLoader(size: 56, padding: 16)
           else if (_events.isEmpty)
-            _eventRow('Opening Ceremony', '18:00', 'Main Stadium', demo: true)
+            const AppStateView(
+              anim: AppAnim.noFixtures,
+              title: 'No events announced yet',
+              compact: true,
+            )
           else
             for (final e in _events.take(5))
               _eventRow(
@@ -139,18 +180,9 @@ class _M2HomeState extends State<M2Home> {
                 e.venue,
                 onTap: () => _openEvent(e, EventFeed.upcomingEvent),
               ),
-          if (_informal.isNotEmpty) ...[
-            const SizedBox(height: 22),
-            const M2SectionTitle('Informal sports'),
-            for (final e in _informal.take(5))
-              _eventRow(
-                e.eventName,
-                e.formattedTime,
-                e.venue,
-                icon: HugeIcons.strokeRoundedFootball,
-                onTap: () => _openEvent(e, EventFeed.informalSport),
-              ),
-          ],
+          const SizedBox(height: 22),
+          const M2SectionTitle('Jump to'),
+          _actionDeck(),
           if (_gallery.isNotEmpty) ...[
             const SizedBox(height: 22),
             M2SectionTitle(
@@ -158,7 +190,7 @@ class _M2HomeState extends State<M2Home> {
               action: 'See all',
               onAction: widget.onOpenGallery,
             ),
-            _galleryStrip(),
+            _galleryMosaic(),
           ],
           const SizedBox(height: 26),
           const M2SectionTitle('Emergency contacts'),
@@ -290,6 +322,100 @@ class _M2HomeState extends State<M2Home> {
     );
   }
 
+  /// Big swipeable image cards for the fest's headline informal events —
+  /// one per page, matching the source data's own order.
+  Widget _attractionsCarousel() {
+    return CarouselSlider(
+      options: CarouselOptions(
+        height: 200,
+        viewportFraction: 0.86,
+        enlargeCenterPage: true,
+        enableInfiniteScroll: _attractions.length > 1,
+      ),
+      items: [
+        for (final e in _attractions.take(8)) _attractionCard(e),
+      ],
+    );
+  }
+
+  Widget _attractionCard(Event event) {
+    return PressScale(
+      onTap: () => _openEvent(event, EventFeed.informalSport),
+      child: Neumorphic(
+        style: M2.well(radius: 20, depth: -4),
+        padding: const EdgeInsets.all(6),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(15),
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              if (event.fullImageUrl.isNotEmpty)
+                CachedNetworkImage(
+                  imageUrl: event.fullImageUrl,
+                  fit: BoxFit.cover,
+                  errorWidget: (_, __, ___) => Container(
+                    color: NeoColors.surfaceRecessed,
+                  ),
+                )
+              else
+                Container(color: NeoColors.surfaceRecessed),
+              Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.transparent,
+                      Colors.black.withValues(alpha: 0.75),
+                    ],
+                    stops: const [0.4, 1],
+                  ),
+                ),
+              ),
+              Positioned(
+                left: 14,
+                right: 14,
+                bottom: 12,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      event.eventName,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w800,
+                        color: Colors.white,
+                      ),
+                    ),
+                    if (event.venue.isNotEmpty ||
+                        event.formattedTime.isNotEmpty) ...[
+                      const SizedBox(height: 3),
+                      Text(
+                        [
+                          event.formattedTime,
+                          event.venue,
+                        ].where((s) => s.isNotEmpty).join('  ·  '),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 11.5,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white.withValues(alpha: 0.85),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _actionDeck() {
     final actions = [
       (HugeIcons.strokeRoundedMapsLocation01, 'Campus map', widget.onOpenMap),
@@ -337,7 +463,6 @@ class _M2HomeState extends State<M2Home> {
     String name,
     String time,
     String venue, {
-    bool demo = false,
     List<List<dynamic>>? icon,
     VoidCallback? onTap,
   }) {
@@ -387,9 +512,7 @@ class _M2HomeState extends State<M2Home> {
                 ],
               ),
             ),
-            if (demo)
-              M2Tag(label: 'DEMO', filled: true)
-            else if (onTap != null)
+            if (onTap != null)
               HugeIcon(
                 icon: HugeIcons.strokeRoundedArrowRight02,
                 color: NeoColors.textMuted,
@@ -401,38 +524,95 @@ class _M2HomeState extends State<M2Home> {
     );
   }
 
-  Widget _galleryStrip() {
-    final photos = _gallery.take(8).toList();
+  /// "=|" mosaic: two stacked tiles on the left, one tall tile on the right —
+  /// a fixed teaser rather than a scroll strip. Each tile sits in its own
+  /// well, like a print set into the panel.
+  Widget _galleryMosaic() {
+    final photos = _gallery.take(3).toList();
+    if (photos.length < 3) {
+      return SizedBox(
+        height: 150,
+        child: Row(
+          children: [
+            for (var i = 0; i < photos.length; i++) ...[
+              if (i > 0) const SizedBox(width: 12),
+              Expanded(child: _galleryTile(photos[i])),
+            ],
+          ],
+        ),
+      );
+    }
+    final extra = _gallery.length - 3;
     return SizedBox(
-      height: 130,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        clipBehavior: Clip.none,
-        itemCount: photos.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 12),
-        itemBuilder: (context, i) => PressScale(
-          onTap: widget.onOpenGallery,
-          // A photo inside a well reads like a print set into the panel.
-          child: Neumorphic(
-            style: M2.well(radius: 18, depth: -4),
-            padding: const EdgeInsets.all(6),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(13),
-              child: SizedBox(
-                width: 150,
-                child: CachedNetworkImage(
-                  imageUrl: photos[i].imageUrl,
-                  fit: BoxFit.cover,
-                  errorWidget: (_, __, ___) => Center(
-                    child: HugeIcon(
-                      icon: HugeIcons.strokeRoundedImage02,
-                      color: NeoColors.textMuted,
-                      size: 20,
-                    ),
+      height: 168,
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              children: [
+                Expanded(child: _galleryTile(photos[0])),
+                const SizedBox(height: 12),
+                Expanded(child: _galleryTile(photos[1])),
+              ],
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: _galleryTile(photos[2], badge: extra > 0 ? '+$extra' : null),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _galleryTile(GalleryItem photo, {String? badge}) {
+    return PressScale(
+      onTap: widget.onOpenGallery,
+      child: Neumorphic(
+        style: M2.well(radius: 18, depth: -4),
+        padding: const EdgeInsets.all(6),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(13),
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              CachedNetworkImage(
+                imageUrl: photo.imageUrl,
+                fit: BoxFit.cover,
+                errorWidget: (_, __, ___) => Container(
+                  color: NeoColors.surfaceRecessed,
+                  alignment: Alignment.center,
+                  child: HugeIcon(
+                    icon: HugeIcons.strokeRoundedImage02,
+                    color: NeoColors.textMuted,
+                    size: 20,
                   ),
                 ),
               ),
-            ),
+              if (badge != null)
+                Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.transparent,
+                        Colors.black.withValues(alpha: 0.55),
+                      ],
+                    ),
+                  ),
+                  alignment: Alignment.bottomRight,
+                  padding: const EdgeInsets.all(10),
+                  child: Text(
+                    '$badge more',
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+            ],
           ),
         ),
       ),
@@ -491,29 +671,32 @@ class _M2HomeState extends State<M2Home> {
   }
 
   Widget _channels() {
-    return Wrap(
-      spacing: 10,
-      runSpacing: 10,
+    return GridView.count(
+      crossAxisCount: 3,
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      mainAxisSpacing: 10,
+      crossAxisSpacing: 10,
+      childAspectRatio: 1.05,
       children: [
         for (final channel in FestInfo.channels)
           GestureDetector(
             onTap: () => _open(channel.url),
             child: Neumorphic(
-              style: M2.pill(selected: false),
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
+              style: M2.plinth(radius: 18, depth: M2.cardDepth),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   HugeIcon(
                     icon: channel.icon,
                     color: NeoColors.waveInk,
-                    size: 16,
+                    size: 21,
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(height: 8),
                   Text(
                     channel.label,
                     style: TextStyle(
-                      fontSize: 11.5,
+                      fontSize: 11,
                       fontWeight: FontWeight.w700,
                       color: NeoColors.logoTeal,
                     ),

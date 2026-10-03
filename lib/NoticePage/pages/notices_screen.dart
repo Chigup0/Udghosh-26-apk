@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:udghosh/config/lottie_assets.dart';
-import 'package:udghosh/models/demo_data.dart';
 import 'package:udghosh/NoticePage/model/Notice.dart';
 import 'package:udghosh/services/api_service.dart';
 import 'package:udghosh/theme/neo_theme.dart';
@@ -44,9 +43,6 @@ class _NoticesScreenState extends State<NoticesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final notices = _notices.isEmpty ? [DemoData.notice()] : _notices;
-    final isDemo = _notices.isEmpty;
-
     return Scaffold(
       backgroundColor: NeoColors.canvasMint,
       appBar: AppBar(
@@ -68,8 +64,8 @@ class _NoticesScreenState extends State<NoticesScreen> {
             : ListView(
                 padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
                 children: [
-                  // A failure with nothing cached replaces the feed; otherwise
-                  // the demo notice would read as a real announcement.
+                  // A failure with nothing cached replaces the feed entirely
+                  // — no notices are rendered underneath it.
                   if (_failure != null && _notices.isEmpty)
                     AppStateView(
                       anim: _failure!.isOffline
@@ -83,104 +79,93 @@ class _NoticesScreenState extends State<NoticesScreen> {
                           : _failure!.message,
                       onRetry: _failure!.isRetryable ? _load : null,
                     )
-                  else if (_failure != null)
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 12),
-                      child: Text(
-                        _failure!.message,
-                        style: TextStyle(color: NeoColors.alert),
+                  else if (_notices.isEmpty)
+                    const AppStateView(
+                      anim: AppAnim.empty,
+                      title: 'No notices yet',
+                      message:
+                          'Announcements from the organisers will '
+                          'show up here.',
+                    )
+                  else ...[
+                    if (_failure != null)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: Text(
+                          _failure!.message,
+                          style: TextStyle(color: NeoColors.alert),
+                        ),
                       ),
-                    ),
-                  for (final n in notices)
-                    NeoCard(
-                      margin: const EdgeInsets.only(bottom: 12),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  n.title,
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w800,
-                                    color: NeoColors.logoTeal,
-                                    fontSize: 15,
-                                  ),
-                                ),
-                              ),
-                              if (isDemo)
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 8,
-                                    vertical: 3,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: NeoColors.flameGold,
-                                    borderRadius: BorderRadius.circular(
-                                      NeoRadii.pill,
-                                    ),
-                                  ),
+                    for (final n in _notices)
+                      NeoCard(
+                        margin: const EdgeInsets.only(bottom: 12),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Expanded(
                                   child: Text(
-                                    'DEMO',
+                                    n.title,
                                     style: TextStyle(
-                                      fontSize: 10,
                                       fontWeight: FontWeight.w800,
-                                      color: NeoColors.onGold,
-                                    ),
-                                  ),
-                                ),
-                            ],
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            n.content,
-                            style: TextStyle(
-                              color: NeoColors.textMuted,
-                              fontSize: 13,
-                              height: 1.4,
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                          Row(
-                            children: [
-                              if (n.createdAt != null)
-                                Text(
-                                  DateFormat(
-                                    'd MMM, h:mm a',
-                                  ).format(n.createdAt!),
-                                  style: TextStyle(
-                                    fontSize: 11,
-                                    color: NeoColors.textMuted.withValues(
-                                      alpha: 0.7,
-                                    ),
-                                  ),
-                                ),
-                              if (n.isEdited) ...[
-                                const SizedBox(width: 8),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 6,
-                                    vertical: 2,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: NeoColors.surfaceRecessed,
-                                    borderRadius: BorderRadius.circular(6),
-                                  ),
-                                  child: Text(
-                                    'edited',
-                                    style: TextStyle(
-                                      fontSize: 9,
-                                      color: NeoColors.textMuted,
+                                      color: NeoColors.logoTeal,
+                                      fontSize: 15,
                                     ),
                                   ),
                                 ),
                               ],
-                            ],
-                          ),
-                        ],
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              n.content,
+                              style: TextStyle(
+                                color: NeoColors.textMuted,
+                                fontSize: 13,
+                                height: 1.4,
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            Row(
+                              children: [
+                                if (n.createdAt != null)
+                                  Text(
+                                    DateFormat(
+                                      'd MMM, h:mm a',
+                                    ).format(n.createdAt!),
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      color: NeoColors.textMuted.withValues(
+                                        alpha: 0.7,
+                                      ),
+                                    ),
+                                  ),
+                                if (n.isEdited) ...[
+                                  const SizedBox(width: 8),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 6,
+                                      vertical: 2,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: NeoColors.surfaceRecessed,
+                                      borderRadius: BorderRadius.circular(6),
+                                    ),
+                                    child: Text(
+                                      'edited',
+                                      style: TextStyle(
+                                        fontSize: 9,
+                                        color: NeoColors.textMuted,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
+                  ],
                 ],
               ),
       ),

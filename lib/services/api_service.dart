@@ -97,18 +97,6 @@ class ApiService {
     );
   }
 
-  static Future<dynamic> _post(String path, Map<String, dynamic> body) {
-    return _send(
-      () => http
-          .post(
-            _uri(path),
-            headers: AppConfig.jsonHeaders,
-            body: jsonEncode(body),
-          )
-          .timeout(_timeout),
-    );
-  }
-
   /// Runs a request and normalises transport failures into [ApiException].
   ///
   /// `http` reports a dead radio, a DNS failure and a refused connection all as
@@ -150,22 +138,6 @@ class ApiService {
       // message rather than surfacing markup to the user.
     }
     throw ApiException(response.statusCode, message);
-  }
-
-  // ---------------------------------------------------------------------
-  // Auth
-  // ---------------------------------------------------------------------
-
-  static Future<void> requestOtp(String email) async {
-    await _post('auth/requestotp', {'email': email});
-  }
-
-  static Future<Map<String, dynamic>> verifyOtp(
-    String email,
-    String otp,
-  ) async {
-    final data = await _post('auth/verifyotp', {'email': email, 'otp': otp});
-    return (data as Map).cast<String, dynamic>();
   }
 
   // ---------------------------------------------------------------------

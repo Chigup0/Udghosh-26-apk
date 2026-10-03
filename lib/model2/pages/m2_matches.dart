@@ -5,7 +5,6 @@ import 'package:udghosh/config/app_config.dart';
 import 'package:udghosh/config/lottie_assets.dart';
 import 'package:udghosh/model2/widgets/m2_match_card.dart';
 import 'package:udghosh/model2/widgets/m2_widgets.dart';
-import 'package:udghosh/models/demo_data.dart';
 import 'package:udghosh/models/match_record.dart';
 import 'package:udghosh/services/api_service.dart';
 import 'package:udghosh/theme/neo_theme.dart';
@@ -193,21 +192,21 @@ class M2MatchesState extends State<M2Matches> {
     }
   }
 
-  MatchRecord get _demo {
+  String get _emptyTitle {
     switch (_tabIndex) {
       case _liveTab:
-        return DemoData.liveMatch(_sport);
+        return 'Nothing live right now';
       case _upcomingTab:
-        return DemoData.upcomingMatch(_sport);
+        return 'No upcoming fixtures';
       default:
-        return DemoData.completedMatch(_sport);
+        return 'No completed matches yet';
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final empty = _items.isEmpty;
-    final showDemo = empty && _search.isEmpty && !_loading;
+    final showEmpty = empty && _search.isEmpty && !_loading;
     final showNoResults = empty && _search.isNotEmpty && !_loading;
 
     return Column(
@@ -334,8 +333,13 @@ class M2MatchesState extends State<M2Matches> {
                           '${AppConfig.sportLabel(_sport)}.',
                       compact: true,
                     )
-                  else if (showDemo)
-                    M2MatchCard(match: _demo, kind: _kind, demo: true)
+                  else if (showEmpty)
+                    AppStateView(
+                      anim: AppAnim.noFixtures,
+                      sport: _sport,
+                      title: _emptyTitle,
+                      compact: true,
+                    )
                   else
                     for (final match in _items) ...[
                       M2MatchCard(match: match, kind: _kind),

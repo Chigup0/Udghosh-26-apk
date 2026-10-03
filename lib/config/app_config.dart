@@ -9,25 +9,22 @@ class AppConfig {
   AppConfig._();
 
   /// Backend REST base URL. Swap this for staging/prod as needed.
-  static const String baseUrl = "https://api.udghosh.org.in/api";
+  static const String baseUrl = "http://api.udghosh.org.in:3001/api";
 
   /// Base URL for statically served assets (images etc.) returned by the API.
-  static const String imgBaseUrl = "https://api.udghosh.org.in";
+  static const String imgBaseUrl = "http://api.udghosh.org.in:3001";
 
   static const Map<String, String> jsonHeaders = {
     'Content-Type': 'application/json',
   };
 
-  // ---------------------------------------------------------------------
-  // Demo / guest bypass credentials — lets reviewers and offline demos in
-  // without hitting the real OTP backend.
-  // ---------------------------------------------------------------------
-  static const String demoEmail = "demo@gmail.com";
-  static const String demoOtp = "123456";
-  static const int demoUserId = 999;
-  static const String demoUserName = "Demo Athlete";
-
-  static const Duration otpResendCooldown = Duration(seconds: 60);
+  /// Legal pages required for Play Store listing — surfaced from the
+  /// Profile screen so they are reachable in-app, not just in the store
+  /// listing.
+  static const String privacyPolicyUrl =
+      "https://chigup0.github.io/udghosh.org/privacy_policy.html";
+  static const String termsAndConditionsUrl =
+      "https://chigup0.github.io/udghosh.org/terms_and_conditions.html";
 
   /// Page size for every paginated match feed. The backend defaults to 10
   /// and caps at 500; 20 fills a phone screen without over-fetching.
@@ -54,6 +51,10 @@ class AppConfig {
     'squash',
     'taekwondo',
     'ultimatefrisbee',
+    'athletics',
+    'aquatics',
+    'weightlifting',
+    'powerlifting',
   ];
 
   /// Human-readable labels for the sport pill bar, keyed by table name.
@@ -72,6 +73,10 @@ class AppConfig {
     'squash': 'Squash',
     'taekwondo': 'Taekwondo',
     'ultimatefrisbee': 'Ultimate Frisbee',
+    'athletics': 'Athletics',
+    'aquatics': 'Aquatics',
+    'weightlifting': 'Weightlifting',
+    'powerlifting': 'Powerlifting',
   };
 
   /// The backend ignores spaces, hyphens and case in sport names, so
@@ -87,7 +92,8 @@ class AppConfig {
 
   /// Glyph per sport, used wherever a sport needs a mark and no Lottie
   /// animation has been bundled for it yet. Hugeicons has no cricket, kabaddi,
-  /// kho-kho, squash or taekwondo glyph, so those borrow the closest fit.
+  /// kho-kho, squash, taekwondo, athletics, weightlifting or powerlifting
+  /// glyph, so those borrow the closest fit.
   static const Map<String, List<List<dynamic>>> sportGlyphs = {
     'cricket': HugeIcons.strokeRoundedBaseballBat,
     'volleyball': HugeIcons.strokeRoundedVolleyball,
@@ -103,6 +109,10 @@ class AppConfig {
     'squash': HugeIcons.strokeRoundedTennisBall,
     'taekwondo': HugeIcons.strokeRoundedBoxingGlove,
     'ultimatefrisbee': HugeIcons.strokeRoundedFrisbee,
+    'athletics': HugeIcons.strokeRoundedStopWatch,
+    'aquatics': HugeIcons.strokeRoundedSwimming,
+    'weightlifting': HugeIcons.strokeRoundedDumbbell01,
+    'powerlifting': HugeIcons.strokeRoundedWeight,
   };
 
   /// Glyph for [table], falling back to a trophy for anything unrecognised.

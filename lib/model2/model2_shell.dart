@@ -132,13 +132,17 @@ class _Model2ShellState extends State<Model2Shell> {
               width: 36,
               height: 36,
               child: ClipOval(
-                child: Image.asset(
-                  'assets/logo/logo.png',
-                  fit: BoxFit.contain,
-                  errorBuilder: (_, __, ___) => HugeIcon(
-                    icon: HugeIcons.strokeRoundedChampion,
-                    color: NeoColors.logoTeal,
-                    size: 20,
+                child: FractionallySizedBox(
+                  widthFactor: 0.74,
+                  heightFactor: 0.74,
+                  child: Image.asset(
+                    'assets/logo/logo.png',
+                    fit: BoxFit.contain,
+                    errorBuilder: (_, __, ___) => HugeIcon(
+                      icon: HugeIcons.strokeRoundedChampion,
+                      color: NeoColors.logoTeal,
+                      size: 20,
+                    ),
                   ),
                 ),
               ),
@@ -150,14 +154,30 @@ class _Model2ShellState extends State<Model2Shell> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  'UDGHOSH',
-                  style: TextStyle(
-                    fontSize: 19,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: 2.4,
-                    height: 1.1,
-                    color: NeoColors.logoTeal,
+                RichText(
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                        text: 'UDGHOSH ',
+                        style: TextStyle(
+                          fontSize: 19,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 2.4,
+                          height: 1.1,
+                          color: NeoColors.logoTeal,
+                        ),
+                      ),
+                      TextSpan(
+                        text: "'26",
+                        style: TextStyle(
+                          fontSize: 19,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 2.4,
+                          height: 1.1,
+                          color: NeoColors.flameGold,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 Text(

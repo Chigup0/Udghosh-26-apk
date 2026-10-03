@@ -1,7 +1,6 @@
 import 'package:flutter_neumorphic_plus/flutter_neumorphic.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:udghosh/NoticePage/pages/notices_screen.dart';
-import 'package:udghosh/ProfilePage/pages/login_screen.dart';
 import 'package:udghosh/ProfilePage/pages/profile_screen.dart';
 import 'package:udghosh/config/core_team.dart';
 import 'package:udghosh/config/feature_controller.dart';
@@ -9,7 +8,6 @@ import 'package:udghosh/config/model_controller.dart';
 import 'package:udghosh/config/nav_style_controller.dart';
 import 'package:udghosh/model2/theme/m2_style.dart';
 import 'package:udghosh/model2/widgets/m2_widgets.dart';
-import 'package:udghosh/services/auth_provider.dart';
 import 'package:udghosh/theme/neo_palette.dart';
 import 'package:udghosh/theme/neo_theme.dart';
 import 'package:udghosh/widgets/nav/nav_spacer.dart';
@@ -24,163 +22,122 @@ class M2More extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListenableBuilder(
-      listenable: AuthController.instance,
-      builder: (context, _) {
-        final auth = AuthController.instance;
-        return ListView(
-          padding: const EdgeInsets.fromLTRB(16, 4, 16, 0),
-          children: [
-            M2Plinth(
-              onTap: auth.isLoggedIn
-                  ? () => Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => const ProfileScreen()),
-                    )
-                  : null,
-              child: Row(
-                children: [
-                  Neumorphic(
-                    style: M2.knob(depth: M2.cardDepth),
-                    child: SizedBox(
-                      width: 54,
-                      height: 54,
-                      child: Center(
-                        child: Text(
-                          auth.isLoggedIn ? auth.initials : '?',
-                          style: TextStyle(
-                            fontSize: 21,
-                            fontWeight: FontWeight.w800,
-                            color: NeoColors.waveInk,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 14),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          auth.isLoggedIn
-                              ? (auth.name?.isNotEmpty == true
-                                    ? auth.name!
-                                    : 'Athlete')
-                              : 'Guest',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w800,
-                            fontSize: 16,
-                            color: NeoColors.logoTeal,
-                          ),
-                        ),
-                        const SizedBox(height: 3),
-                        Text(
-                          auth.isLoggedIn
-                              ? (auth.email ?? '')
-                              : 'Not signed in',
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 11.5,
-                            color: NeoColors.textMuted,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  if (auth.isLoggedIn)
-                    HugeIcon(
-                      icon: HugeIcons.strokeRoundedArrowRight02,
-                      color: NeoColors.textMuted,
-                      size: 17,
-                    ),
-                ],
-              ),
-            ),
-            if (!auth.isLoggedIn) ...[
-              const SizedBox(height: 12),
-              NeumorphicButton(
-                onPressed: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const LoginScreen()),
-                ),
-                style: M2.pill(selected: false, color: NeoColors.charcoal),
-                minDistance: M2.pressed,
-                padding: const EdgeInsets.symmetric(vertical: 15),
-                child: Center(
-                  child: Text(
-                    'LOGIN WITH EMAIL OTP',
-                    style: TextStyle(
-                      fontSize: 12.5,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: 0.7,
-                      color: NeoColors.onCharcoal,
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(16, 4, 16, 0),
+      children: [
+        M2Plinth(
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const ProfileScreen()),
+          ),
+          child: Row(
+            children: [
+              Neumorphic(
+                style: M2.knob(depth: M2.cardDepth),
+                child: SizedBox(
+                  width: 54,
+                  height: 54,
+                  child: Center(
+                    child: HugeIcon(
+                      icon: HugeIcons.strokeRoundedChampion,
+                      color: NeoColors.waveInk,
+                      size: 22,
                     ),
                   ),
                 ),
               ),
-            ],
-            const SizedBox(height: 22),
-            const M2SectionTitle('App model'),
-            const M2ModelCard(),
-            const SizedBox(height: 22),
-            const M2SectionTitle('Extras'),
-            const _M2ExtrasCard(),
-            const SizedBox(height: 22),
-            const M2SectionTitle('Navigation bar'),
-            const _M2NavStyleCard(),
-            const SizedBox(height: 22),
-            const M2SectionTitle('Appearance'),
-            const _M2ThemeCard(),
-            const SizedBox(height: 22),
-            const M2SectionTitle('Fest'),
-            M2Plinth(
-              radius: M2.rCard,
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const NoticesScreen()),
-              ),
-              padding: const EdgeInsets.all(15),
-              child: Row(
-                children: [
-                  HugeIcon(
-                    icon: HugeIcons.strokeRoundedMegaphone01,
-                    color: NeoColors.waveInk,
-                    size: 19,
-                  ),
-                  const SizedBox(width: 13),
-                  Expanded(
-                    child: Text(
-                      'Announcements & Notices',
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Udghosh Sports',
                       style: TextStyle(
-                        fontWeight: FontWeight.w700,
-                        fontSize: 13.5,
+                        fontWeight: FontWeight.w800,
+                        fontSize: 16,
                         color: NeoColors.logoTeal,
                       ),
                     ),
-                  ),
-                  HugeIcon(
-                    icon: HugeIcons.strokeRoundedArrowRight02,
-                    color: NeoColors.textMuted,
-                    size: 16,
-                  ),
-                ],
+                    const SizedBox(height: 3),
+                    Text(
+                      'App info & announcements',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 11.5,
+                        color: NeoColors.textMuted,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            const SizedBox(height: 12),
-            const _M2CoreTeam(),
-            const SizedBox(height: 22),
-            Center(
-              child: Text(
-                'Version $appVersion',
-                style: TextStyle(fontSize: 11, color: NeoColors.textMuted),
+              HugeIcon(
+                icon: HugeIcons.strokeRoundedArrowRight02,
+                color: NeoColors.textMuted,
+                size: 17,
               ),
-            ),
-            const NavSpacer(),
-          ],
-        );
-      },
+            ],
+          ),
+        ),
+        const SizedBox(height: 22),
+        const M2SectionTitle('App model'),
+        const M2ModelCard(),
+        const SizedBox(height: 22),
+        const M2SectionTitle('Extras'),
+        const _M2ExtrasCard(),
+        const SizedBox(height: 22),
+        const M2SectionTitle('Navigation bar'),
+        const _M2NavStyleCard(),
+        const SizedBox(height: 22),
+        const M2SectionTitle('Appearance'),
+        const _M2ThemeCard(),
+        const SizedBox(height: 22),
+        const M2SectionTitle('Fest'),
+        M2Plinth(
+          radius: M2.rCard,
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const NoticesScreen()),
+          ),
+          padding: const EdgeInsets.all(15),
+          child: Row(
+            children: [
+              HugeIcon(
+                icon: HugeIcons.strokeRoundedMegaphone01,
+                color: NeoColors.waveInk,
+                size: 19,
+              ),
+              const SizedBox(width: 13),
+              Expanded(
+                child: Text(
+                  'Announcements & Notices',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 13.5,
+                    color: NeoColors.logoTeal,
+                  ),
+                ),
+              ),
+              HugeIcon(
+                icon: HugeIcons.strokeRoundedArrowRight02,
+                color: NeoColors.textMuted,
+                size: 16,
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+        const _M2CoreTeam(),
+        const SizedBox(height: 22),
+        Center(
+          child: Text(
+            'Version $appVersion',
+            style: TextStyle(fontSize: 11, color: NeoColors.textMuted),
+          ),
+        ),
+        const NavSpacer(),
+      ],
     );
   }
 }
@@ -388,8 +345,7 @@ class _M2CoreTeamState extends State<_M2CoreTeam> {
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          '${CoreTeam.memberCount} members · '
-                          '${wings.length} wings',
+                          '${CoreTeam.memberCount} members',
                           style: TextStyle(
                             fontSize: 10.5,
                             color: NeoColors.textMuted,

@@ -81,7 +81,7 @@ class _MapScreenState extends State<MapScreen> {
 
   /// Only the major set is pinned by default — every ground and food outlet,
   /// the halls, the campus landmarks. The rest stay searchable and can be
-  /// switched on from the filter bar.
+  /// switched on from the places menu.
   bool _majorOnly = true;
   double _zoom = 16;
   bool _ready = false;
@@ -89,6 +89,11 @@ class _MapScreenState extends State<MapScreen> {
   final _searchController = TextEditingController();
   final _searchFocus = FocusNode();
   List<MapSearchHit> _results = const [];
+
+  /// Search starts collapsed into a circular button; tapping it expands the
+  /// field in place. The places menu is the sibling circular button.
+  bool _searchExpanded = false;
+  bool _menuOpen = false;
 
   @override
   void initState() {
@@ -143,10 +148,36 @@ class _MapScreenState extends State<MapScreen> {
     setState(() => _results = const []);
   }
 
+  void _expandSearch() {
+    setState(() {
+      _searchExpanded = true;
+      _menuOpen = false;
+    });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _searchFocus.requestFocus();
+    });
+  }
+
+  void _collapseSearch() {
+    _searchFocus.unfocus();
+    setState(() {
+      _searchExpanded = false;
+      _searchController.clear();
+      _results = const [];
+    });
+  }
+
+  void _toggleMenu() => setState(() {
+    _menuOpen = !_menuOpen;
+    if (_menuOpen) _searchFocus.unfocus();
+  });
+
   /// Centres on a hit and selects it, so the detail card names what you found.
   void _goToHit(MapSearchHit hit) {
     _searchFocus.unfocus();
     setState(() {
+      _searchExpanded = false;
+      _menuOpen = false;
       if (hit.isVenue) {
         _selectedPlace = null;
         _selectedVenue = _venues.firstWhere(
@@ -231,7 +262,10 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   void _setFilter(PlaceCategory? category) {
-    setState(() => _filter = category);
+    setState(() {
+      _filter = category;
+      _menuOpen = false;
+    });
     _recomputePins();
   }
 
@@ -299,89 +333,137 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 
-  Widget _filterBar() {
-    final categories = CampusPlaces.categoriesIn(majorOnly: _majorOnly);
-    if (categories.isEmpty) return const SizedBox.shrink();
+  /// Vertical list of fest venues and, when the campus-places layer is on,
+  /// its categories and depth toggle — everything that used to live in a
+  /// horizontal chip row now lives here, behind the menu button.
+  Widget _placesMenu() {
+    final categories = _placesOn
+        ? CampusPlaces.categoriesIn(majorOnly: _majorOnly)
+        : const <PlaceCategory>[];
     final total = _majorOnly
         ? CampusPlaces.majorCount
         : CampusPlaces.places.length;
-    return SizedBox(
-      height: 36,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        // +2: the leading "All" chip and the trailing depth toggle.
-        itemCount: categories.length + 2,
-        separatorBuilder: (_, __) => const SizedBox(width: 8),
-        itemBuilder: (context, i) {
-          if (i == categories.length + 1) return _depthChip();
-          final category = i == 0 ? null : categories[i - 1];
-          final active = _filter == category;
-          final label = category == null
-              ? 'All $total'
-              : '${category.label} '
-                    '${CampusPlaces.countOf(category, majorOnly: _majorOnly)}';
-          return GestureDetector(
-            onTap: () => _setFilter(category),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 13),
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: active ? NeoColors.charcoal : NeoColors.surface,
-                borderRadius: BorderRadius.circular(NeoRadii.pill),
-                boxShadow: NeoShadows.raisedSmall(),
-              ),
-              child: Text(
-                label,
-                style: TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w800,
-                  color: active ? NeoColors.onCharcoal : NeoColors.logoTeal,
+    return NeoCard(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxHeight: 360),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              for (final v in _venueHits)
+                _menuRow(
+                  icon: HugeIcons.strokeRoundedChampion,
+                  label: v.name,
+                  tint: NeoColors.flameGold,
+                  onTap: () => _goToHit(v),
                 ),
-              ),
-            ),
-          );
-        },
+              if (categories.isNotEmpty) ...[
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(14, 10, 14, 4),
+                  child: Text(
+                    'CAMPUS PLACES',
+                    style: TextStyle(
+                      fontSize: 10.5,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 0.8,
+                      color: NeoColors.textMuted,
+                    ),
+                  ),
+                ),
+                _menuRow(
+                  icon: HugeIcons.strokeRoundedGridView,
+                  label: 'All places ($total)',
+                  tint: NeoColors.waveTeal,
+                  selected: _filter == null,
+                  onTap: () => _setFilter(null),
+                ),
+                for (final category in categories)
+                  _menuRow(
+                    icon: category.glyph,
+                    label:
+                        '${category.label} '
+                        '(${CampusPlaces.countOf(category, majorOnly: _majorOnly)})',
+                    tint: NeoColors.waveTeal,
+                    selected: _filter == category,
+                    onTap: () => _setFilter(category),
+                  ),
+                _menuRow(
+                  icon: _majorOnly
+                      ? HugeIcons.strokeRoundedViewOffSlash
+                      : HugeIcons.strokeRoundedEye,
+                  label: _majorOnly ? 'Major only' : 'Showing all',
+                  tint: NeoColors.flameGold,
+                  onTap: () {
+                    setState(() => _majorOnly = !_majorOnly);
+                    _recomputePins();
+                  },
+                ),
+              ],
+            ],
+          ),
+        ),
       ),
     );
   }
 
-  /// Switches between the curated major set and every mapped place.
-  Widget _depthChip() {
-    final showingAll = !_majorOnly;
+  Widget _menuRow({
+    required List<List<dynamic>> icon,
+    required String label,
+    required Color tint,
+    required VoidCallback onTap,
+    bool selected = false,
+  }) {
     return GestureDetector(
-      onTap: () {
-        setState(() => _majorOnly = !_majorOnly);
-        _recomputePins();
-      },
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 13),
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          color: showingAll ? NeoColors.flameGold : NeoColors.surface,
-          borderRadius: BorderRadius.circular(NeoRadii.pill),
-          boxShadow: NeoShadows.raisedSmall(),
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
+        color: selected
+            ? NeoColors.surfaceRecessed.withValues(alpha: 0.6)
+            : Colors.transparent,
         child: Row(
-          mainAxisSize: MainAxisSize.min,
           children: [
-            HugeIcon(
-              icon: showingAll
-                  ? HugeIcons.strokeRoundedEye
-                  : HugeIcons.strokeRoundedViewOffSlash,
-              color: showingAll ? NeoColors.onGold : NeoColors.textMuted,
-              size: 13,
-            ),
-            const SizedBox(width: 6),
-            Text(
-              showingAll ? 'Showing all' : 'Major only',
-              style: TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w800,
-                color: showingAll ? NeoColors.onGold : NeoColors.logoTeal,
+            HugeIcon(icon: icon, color: tint, size: 17),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                  color: NeoColors.logoTeal,
+                ),
               ),
             ),
+            if (selected)
+              HugeIcon(
+                icon: HugeIcons.strokeRoundedCheckmarkCircle02,
+                color: NeoColors.waveInk,
+                size: 15,
+              ),
           ],
         ),
+      ),
+    );
+  }
+
+  /// Search / menu buttons in the top bar — same shell as [_mapButton] but
+  /// without its bottom-stack top padding, and able to show an active tint.
+  Widget _topCircleButton(
+    List<List<dynamic>> icon,
+    VoidCallback onTap, {
+    bool active = false,
+  }) {
+    return NeoCircleButton(
+      size: 44,
+      onTap: onTap,
+      child: HugeIcon(
+        icon: icon,
+        color: active ? NeoColors.flameGold : NeoColors.logoTeal,
+        size: 18,
       ),
     );
   }
@@ -494,10 +576,17 @@ class _MapScreenState extends State<MapScreen> {
                 onPositionChanged: (_, __) => _onCameraChanged(),
                 onTap: (_, __) {
                   _searchFocus.unfocus();
-                  if (_selectedPlace == null && _results.isEmpty) return;
+                  if (_selectedPlace == null &&
+                      _results.isEmpty &&
+                      !_menuOpen &&
+                      !_searchExpanded) {
+                    return;
+                  }
                   setState(() {
                     _selectedPlace = null;
                     _results = const [];
+                    _menuOpen = false;
+                    _searchExpanded = false;
                   });
                 },
               ),
@@ -576,11 +665,10 @@ class _MapScreenState extends State<MapScreen> {
                     Row(
                       children: [
                         NeoCircleButtonBack(),
-                        Expanded(
-                          child: Padding(
-                            padding: EdgeInsets.only(
-                              left: Navigator.of(context).canPop() ? 12 : 0,
-                            ),
+                        if (Navigator.of(context).canPop())
+                          const SizedBox(width: 8),
+                        if (_searchExpanded)
+                          Expanded(
                             child: MapSearchBar(
                               controller: _searchController,
                               focusNode: _searchFocus,
@@ -589,13 +677,32 @@ class _MapScreenState extends State<MapScreen> {
                               onClear: _clearSearch,
                               onSelected: _goToHit,
                             ),
+                          )
+                        else
+                          const Spacer(),
+                        const SizedBox(width: 10),
+                        if (_searchExpanded)
+                          _topCircleButton(
+                            HugeIcons.strokeRoundedCancel01,
+                            _collapseSearch,
+                          )
+                        else ...[
+                          _topCircleButton(
+                            HugeIcons.strokeRoundedSearch01,
+                            _expandSearch,
                           ),
-                        ),
+                          const SizedBox(width: 10),
+                          _topCircleButton(
+                            HugeIcons.strokeRoundedMenu01,
+                            _toggleMenu,
+                            active: _menuOpen,
+                          ),
+                        ],
                       ],
                     ),
-                    if (_placesOn && _results.isEmpty) ...[
+                    if (_menuOpen && !_searchExpanded) ...[
                       const SizedBox(height: 10),
-                      _filterBar(),
+                      _placesMenu(),
                     ],
                   ],
                 ),

@@ -1,7 +1,9 @@
 import 'package:flutter_neumorphic_plus/flutter_neumorphic.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:udghosh/config/fest_info.dart';
+import 'package:udghosh/config/lottie_assets.dart';
 import 'package:udghosh/widgets/app_lottie.dart';
 import 'package:udghosh/widgets/press_scale.dart';
 import 'package:udghosh/widgets/nav/nav_spacer.dart';
@@ -9,7 +11,6 @@ import 'package:udghosh/models/gallery_item.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:udghosh/EventsPage/pages/event_detail_screen.dart';
 import 'package:udghosh/config/app_config.dart';
-import 'package:udghosh/models/demo_data.dart';
 import 'package:udghosh/models/event.dart';
 import 'package:udghosh/models/match_record.dart';
 import 'package:udghosh/services/api_service.dart';
@@ -43,7 +44,9 @@ class _HomeScreenState extends State<HomeScreen> {
   String? _heroSport;
   Map<String, int> _tablesLength = {};
   List<Event> _events = [];
-  List<Event> _informalSports = [];
+  // "Informal sports" feed, rebranded on Home as the "Major attractions"
+  // carousel — same backend endpoint, different presentation.
+  List<Event> _attractions = [];
   List<GalleryItem> _gallery = [];
   bool _loading = true;
 
@@ -75,7 +78,7 @@ class _HomeScreenState extends State<HomeScreen> {
       _tablesLength = counts;
       _liveMatch = results[0] as MatchRecord?;
       _events = results[1] as List<Event>;
-      _informalSports = results[2] as List<Event>;
+      _attractions = results[2] as List<Event>;
       _gallery = results[3] as List<GalleryItem>;
       _loading = false;
     });
@@ -215,6 +218,11 @@ class _HomeScreenState extends State<HomeScreen> {
       child: ListView(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
         children: [
+          if (_attractions.isNotEmpty) ...[
+            _sectionHeader('Major attractions'),
+            _attractionsCarousel(),
+            const SizedBox(height: 24),
+          ],
           RichText(
             text: TextSpan(
               children: [
@@ -238,12 +246,41 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           const SizedBox(height: 18),
-          MatchCard(
-            match: _liveMatch ?? DemoData.liveMatch('basketball'),
-            variant: MatchCardVariant.live,
-            demo: _liveMatch == null,
-            onTap: () => widget.onOpenMatches(sport: _heroSport),
-          ),
+          if (_liveMatch != null)
+            MatchCard(
+              match: _liveMatch!,
+              variant: MatchCardVariant.live,
+              onTap: () => widget.onOpenMatches(sport: _heroSport),
+            )
+          else if (!_loading)
+            NeoCard(
+              onTap: () => widget.onOpenMatches(),
+              child: Row(
+                children: [
+                  NeoInset(
+                    radius: 14,
+                    padding: const EdgeInsets.all(11),
+                    child: HugeIcon(
+                      icon: HugeIcons.strokeRoundedChampion,
+                      color: NeoColors.waveInk,
+                      size: 22,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      'No live match right now',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w700,
+                        color: NeoColors.logoTeal,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            )
+          else
+            const AppLoader(size: 56, padding: 16),
           const SizedBox(height: 20),
           if (_tablesLength.isNotEmpty) ...[
             _sectionHeader('Live right now'),
@@ -280,6 +317,24 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             const SizedBox(height: 20),
           ],
+          _sectionHeader('Upcoming events'),
+          if (_loading)
+            const AppLoader(size: 56, padding: 16)
+          else if (_events.isEmpty)
+            const AppStateView(
+              anim: AppAnim.noFixtures,
+              title: 'No events announced yet',
+              compact: true,
+            )
+          else
+            for (final e in _events.take(5))
+              _eventCard(
+                e.eventName,
+                e.formattedTime,
+                e.venue,
+                onTap: () => _openEvent(e, EventFeed.upcomingEvent),
+              ),
+          const SizedBox(height: 20),
           _sectionHeader('Quick actions'),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 4),
@@ -316,39 +371,6 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
           ),
-          const SizedBox(height: 20),
-          _sectionHeader('Upcoming events'),
-          if (_loading)
-            const AppLoader(size: 56, padding: 16)
-          else if (_events.isEmpty)
-            _eventCard(
-              'Opening Ceremony',
-              '18:00',
-              'Main Stadium',
-              demo: true,
-              onTap: null,
-            )
-          else
-            for (final e in _events.take(5))
-              _eventCard(
-                e.eventName,
-                e.formattedTime,
-                e.venue,
-                onTap: () => _openEvent(e, EventFeed.upcomingEvent),
-              ),
-          if (_informalSports.isNotEmpty) ...[
-            const SizedBox(height: 20),
-            _sectionHeader('Informal sports'),
-            for (final e in _informalSports.take(5))
-              _eventCard(
-                e.eventName,
-                e.formattedTime,
-                e.venue,
-                icon: HugeIcons.strokeRoundedFootball,
-                ink: NeoColors.coralInk,
-                onTap: () => _openEvent(e, EventFeed.informalSport),
-              ),
-          ],
           // Only appears once there are real photos, so the home page never
           // carries an empty strip waiting to be filled.
           if (_gallery.isNotEmpty) ...[
@@ -358,7 +380,7 @@ class _HomeScreenState extends State<HomeScreen> {
               actionLabel: 'See all',
               onAction: widget.onOpenGallery,
             ),
-            _galleryStrip(),
+            _galleryMosaic(),
           ],
           const SizedBox(height: 28),
           _footer(),
@@ -368,27 +390,152 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  /// Horizontal photo strip. Tapping any tile opens the Gallery tab rather
-  /// than a one-off viewer, so the strip reads as a window into that tab.
-  Widget _galleryStrip() {
-    final photos = _gallery.take(8).toList();
-    return SizedBox(
-      height: 116,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        clipBehavior: Clip.none,
-        itemCount: photos.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 10),
-        itemBuilder: (context, i) => PressScale(
-          onTap: widget.onOpenGallery,
-          child: Neumorphic(
-            style: NeoTheme.raisedStyle(radius: 16, depth: NeoDepth.chip),
-            child: SizedBox(
-              width: 148,
-              child: CachedNetworkImage(
-                imageUrl: photos[i].imageUrl,
+  /// Big swipeable image cards for the fest's headline informal events —
+  /// one per page, matching the source data's own order.
+  Widget _attractionsCarousel() {
+    return CarouselSlider(
+      options: CarouselOptions(
+        height: 200,
+        viewportFraction: 0.86,
+        enlargeCenterPage: true,
+        enableInfiniteScroll: _attractions.length > 1,
+      ),
+      items: [
+        for (final e in _attractions.take(8)) _attractionCard(e),
+      ],
+    );
+  }
+
+  Widget _attractionCard(Event event) {
+    return PressScale(
+      onTap: () => _openEvent(event, EventFeed.informalSport),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            if (event.fullImageUrl.isNotEmpty)
+              CachedNetworkImage(
+                imageUrl: event.fullImageUrl,
                 fit: BoxFit.cover,
-                errorWidget: (_, __, ___) => Center(
+                errorWidget: (_, __, ___) => Container(
+                  color: NeoColors.surfaceRecessed,
+                ),
+              )
+            else
+              Container(color: NeoColors.surfaceRecessed),
+            Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.transparent,
+                    Colors.black.withValues(alpha: 0.75),
+                  ],
+                  stops: const [0.4, 1],
+                ),
+              ),
+            ),
+            Positioned(
+              left: 16,
+              right: 16,
+              bottom: 14,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    event.eventName,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.white,
+                    ),
+                  ),
+                  if (event.venue.isNotEmpty || event.formattedTime.isNotEmpty) ...[
+                    const SizedBox(height: 3),
+                    Text(
+                      [
+                        event.formattedTime,
+                        event.venue,
+                      ].where((s) => s.isNotEmpty).join('  //  '),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white.withValues(alpha: 0.85),
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// "=|" mosaic: two stacked tiles on the left, one tall tile on the right.
+  /// A fixed, glanceable teaser rather than a scroll strip — tapping any tile
+  /// (or the extra-count badge) opens the Gallery tab.
+  Widget _galleryMosaic() {
+    final photos = _gallery.take(3).toList();
+    if (photos.length < 3) {
+      return SizedBox(
+        height: 150,
+        child: Row(
+          children: [
+            for (var i = 0; i < photos.length; i++) ...[
+              if (i > 0) const SizedBox(width: 10),
+              Expanded(child: _galleryTile(photos[i])),
+            ],
+          ],
+        ),
+      );
+    }
+    final extra = _gallery.length - 3;
+    return SizedBox(
+      height: 168,
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              children: [
+                Expanded(child: _galleryTile(photos[0])),
+                const SizedBox(height: 10),
+                Expanded(child: _galleryTile(photos[1])),
+              ],
+            ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: _galleryTile(photos[2], badge: extra > 0 ? '+$extra' : null),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _galleryTile(GalleryItem photo, {String? badge}) {
+    return PressScale(
+      onTap: widget.onOpenGallery,
+      child: Neumorphic(
+        style: NeoTheme.raisedStyle(radius: 18, depth: NeoDepth.chip),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(18),
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              CachedNetworkImage(
+                imageUrl: photo.imageUrl,
+                fit: BoxFit.cover,
+                errorWidget: (_, __, ___) => Container(
+                  color: NeoColors.surfaceRecessed,
+                  alignment: Alignment.center,
                   child: HugeIcon(
                     icon: HugeIcons.strokeRoundedImage02,
                     color: NeoColors.textMuted,
@@ -396,7 +543,30 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
               ),
-            ),
+              if (badge != null)
+                Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.transparent,
+                        Colors.black.withValues(alpha: 0.55),
+                      ],
+                    ),
+                  ),
+                  alignment: Alignment.bottomRight,
+                  padding: const EdgeInsets.all(10),
+                  child: Text(
+                    '$badge more',
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+            ],
           ),
         ),
       ),
@@ -466,35 +636,35 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         const SizedBox(height: 22),
         _sectionHeader('Follow the fest'),
-        Wrap(
-          spacing: 10,
-          runSpacing: 10,
+        GridView.count(
+          crossAxisCount: 3,
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          mainAxisSpacing: 10,
+          crossAxisSpacing: 10,
+          childAspectRatio: 1.05,
           children: [
             for (final channel in FestInfo.channels)
               GestureDetector(
                 onTap: () => _open(channel.url),
                 child: Neumorphic(
                   style: NeoTheme.raisedStyle(
-                    radius: NeoRadii.pill,
+                    radius: NeoRadii.card,
                     depth: NeoDepth.chip,
                   ),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 14,
-                    vertical: 10,
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       HugeIcon(
                         icon: channel.icon,
                         color: NeoColors.waveInk,
-                        size: 17,
+                        size: 22,
                       ),
-                      const SizedBox(width: 8),
+                      const SizedBox(height: 8),
                       Text(
                         channel.label,
                         style: TextStyle(
-                          fontSize: 12,
+                          fontSize: 11.5,
                           fontWeight: FontWeight.w700,
                           color: NeoColors.logoTeal,
                         ),
@@ -508,7 +678,7 @@ class _HomeScreenState extends State<HomeScreen> {
         const SizedBox(height: 24),
         Center(
           child: Text(
-            "Udghosh '26  //  IIT Kanpur",
+            "Udghosh '26  |  IIT Kanpur",
             style: TextStyle(
               fontSize: 11,
               fontWeight: FontWeight.w600,
@@ -524,7 +694,6 @@ class _HomeScreenState extends State<HomeScreen> {
     String name,
     String time,
     String venue, {
-    bool demo = false,
     List<List<dynamic>>? icon,
     Color? ink,
     VoidCallback? onTap,
@@ -567,23 +736,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
           ),
-          if (demo)
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-              decoration: BoxDecoration(
-                color: NeoColors.flameGold,
-                borderRadius: BorderRadius.circular(NeoRadii.pill),
-              ),
-              child: Text(
-                'DEMO',
-                style: TextStyle(
-                  fontSize: 10,
-                  fontWeight: FontWeight.w800,
-                  color: NeoColors.onGold,
-                ),
-              ),
-            )
-          else if (onTap != null)
+          if (onTap != null)
             Icon(Icons.chevron_right_rounded, color: NeoColors.textMuted),
         ],
       ),
